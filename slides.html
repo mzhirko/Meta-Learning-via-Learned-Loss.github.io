@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta-Learning via Learned Loss</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            scroll-behavior: smooth;
+        }
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 80px 20px 20px 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        h1, h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 0 20px;
+        }
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .nav-links a:hover {
+            background-color: #4CAF50;
+        }
+        .definitions-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .definition-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: left;
+            transition: transform 0.3s ease;
+        }
+        .definition-card:hover {
+            transform: translateY(-5px);
+        }
+        .definition-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.1em;
+        }
+        .definition-text {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        .formula-dropdown {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: background-color 0.3s;
+        }
+        .formula-dropdown:hover {
+            background-color: #45a049;
+        }
+        .formula-content {
+            display: none;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 10px;
+        }
+        .ml-model { background-color: #e6f7ff; }
+        .input-output { background-color: #fff0f5; }
+        .counterfactual { background-color: #f0fff0; }
+        .properties { background-color: #fff5e6; }
+        
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                font-size: 0.9em;
+            }
+            .slide {
+                padding-top: 100px;
+            }
+            .definitions-container {
+                grid-template-columns: 1fr;
+            }
+        }
+                .framework-diagram {
+            max-width: 800px;
+            width: 100%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .results-graph {
+            max-width: 800px;
+            width: 100%;
+            height: 300px;
+            margin: 20px auto;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .graph-line {
+            stroke-width: 3;
+            fill: none;
+        }
+        
+        .graph-line.meta {
+            stroke: #4CAF50;
+        }
+        
+        .graph-line.standard {
+            stroke: #2196F3;
+        }
+        
+        .evaluation-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .evaluation-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: left;
+        }
+        
+        .formula-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        .explanation-text {
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: left;
+            line-height: 1.6;
+            color: #333;
+            padding: 0 20px;
+        }
+        .formula-explanation {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-links">
+            <a href="#slide1">Motivation</a>
+            <a href="#slide2">Introduction</a>
+            <a href="#slide3">Definitions</a>
+            <a href="#slide4">Framework</a>
+            <a href="#slide5">Methods</a>
+            <a href="#slide6">Results</a>
+            <a href="#slide7">Applications</a>
+            <a href="#slide8">Future</a>
+        </div>
+    </nav>
+
+    <div class="slide" id="slide1">
+        <h1>Meta-Learning via Learned Loss</h1>
+        <h2>Motivation</h2>
+        <div class="explanation-text">
+            In machine learning, loss functions and regularization mechanisms are typically chosen through heuristic
+            approaches from a limited set of options. This manual selection process often fails to capture optimal
+            learning signals for specific tasks, creating a significant limitation in model training efficiency.
+        </div>
+        <div class="definitions-container">
+            <div class="definition-card ml-model">
+                <div class="definition-title">Current Challenge</div>
+                <div class="definition-text">The traditional approach of manually selecting loss functions limits our
+                    ability to find optimal training signals for specific tasks and architectures.</div>
+            </div>
+            <div class="definition-card input-output">
+                <div class="definition-title">Limitations</div>
+                <div class="definition-text">Standard loss functions may not provide the most efficient learning path
+                    for complex tasks, leading to slower convergence and suboptimal performance.</div>
+            </div>
+            <div class="definition-card properties">
+                <div class="definition-title">Solution</div>
+                <div class="definition-text">We introduce a framework for automatically discovering task-appropriate
+                    loss functions that enable faster and more robust training across different architectures and tasks.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide2">
+        <h2>Introduction to Meta-Learning via Learned Loss</h2>
+        <div class="explanation-text">
+            Our framework introduces a novel approach to meta-learning that learns loss functions capable of
+            generalizing across multiple tasks and architectures. Through a differentiable framework, we develop loss
+            functions that are independent of the model being optimized (the optimizee), making them highly versatile
+            for various applications including classification, regression, and reinforcement learning problems.
+        </div>
+        <div class="definition-card">
+            <div class="definition-title">Key Innovation</div>
+            <div class="definition-text">
+                Instead of manually designing loss functions, our approach learns them directly from data, creating a
+                meta-learning system that can adapt to different types of problems while maintaining optimization
+                efficiency. This learned loss function becomes a powerful tool that captures complex learning dynamics
+                that traditional hand-crafted losses might miss.
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide3">
+        <h2>Key Definitions</h2>
+        <div class="explanation-text">
+            Understanding the framework requires familiarity with several key concepts that form the foundation of our
+            approach. Here are the essential components that work together in our meta-learning system:
+        </div>
+        <div class="definitions-container">
+            <div class="definition-card">
+                <div class="definition-title">Meta-Loss (Mφ)</div>
+                <div class="definition-text">A parametric loss function with parameters φ that generates loss values for
+                    training. This function learns to provide optimal training signals for a variety of tasks and model
+                    architectures.</div>
+            </div>
+            <div class="definition-card">
+                <div class="definition-title">Optimizee (fθ)</div>
+                <div class="definition-text">The model being trained using the meta-loss function. This could be a
+                    classifier, regressor, or control policy. The optimizee's parameters θ are updated using gradients
+                    from the meta-loss.</div>
+            </div>
+            <div class="definition-card">
+                <div class="definition-title">Task Loss (LT)</div>
+                <div class="definition-text">The standard loss used to evaluate and update meta-loss parameters. This
+                    provides the learning signal for improving the meta-loss function itself.</div>
+            </div>
+        </div>
+        <div class="formula-explanation">
+            <h3>Key Formula: Inner Loop Update</h3>
+            <p>θnew = θ - α∇θLlearned</p>
+            <p>Where:</p>
+            <ul>
+                <li>θnew: Updated model parameters</li>
+                <li>α: Learning rate</li>
+                <li>∇θLlearned: Gradient of learned loss with respect to model parameters</li>
+            </ul>
+        </div>
+    </div>
+    <div class="slide" id="slide4">
+        <h2>Framework Overview</h2>
+        <div class="explanation-text">
+            Our framework consists of two main optimization loops working together to learn and apply the meta-loss
+            function. This dual-loop structure enables effective learning of loss functions that can generalize across
+            different tasks and architectures.
+        </div>
+        <div class="framework-diagram">
+            <svg viewBox="0 0 800 400">
+                <!-- Previous SVG elements -->
+                <rect width="800" height="400" fill="#f8f9fa" />
+
+                <!-- Meta-Loss Network -->
+                <rect x="300" y="50" width="200" height="100" rx="10" fill="#4CAF50" opacity="0.8" />
+                <text x="400" y="100" text-anchor="middle" fill="white" font-weight="bold">Meta-Loss Network</text>
+
+                <!-- Input arrows with labels -->
+                <path d="M200,100 L300,100" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
+                <text x="250" y="80" text-anchor="middle" font-size="14">Task Information</text>
+                <text x="250" y="95" text-anchor="middle" font-size="12">(targets, goals, rewards)</text>
+
+                <!-- Inner Loop with explanation -->
+                <rect x="300" y="200" width="200" height="80" rx="10" fill="#2196F3" opacity="0.8" />
+                <text x="400" y="230" text-anchor="middle" fill="white" font-weight="bold">Inner Loop</text>
+                <text x="400" y="250" text-anchor="middle" fill="white" font-size="12">Updates optimizee</text>
+
+                <!-- Outer Loop with explanation -->
+                <path d="M500,240 C600,240 600,100 500,100" stroke="#333" stroke-width="2" fill="none"
+                    marker-end="url(#arrowhead)" />
+                <text x="580" y="180" text-anchor="middle" font-weight="bold">Outer Loop</text>
+                <text x="580" y="195" text-anchor="middle" font-size="12">Updates meta-loss</text>
+
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+        <div class="formula-explanation">
+            <h3>Core Framework Equations</h3>
+            <div style="margin: 20px 0;">
+                <p><strong>Inner Loop Update:</strong></p>
+                <p>θnew = θ - α∇θLlearned</p>
+                <p>Where Llearned = Mφ(y, fθ(x))</p>
+                <p style="font-size: 0.9em; color: #666;">This equation shows how the optimizee's parameters are updated
+                    using the meta-loss gradient.</p>
+            </div>
+            <div style="margin: 20px 0;">
+                <p><strong>Outer Loop Update:</strong></p>
+                <p>∇φLT = ∇fLT ∇θnew fθnew ∇φθnew</p>
+                <p style="font-size: 0.9em; color: #666;">This equation demonstrates how the meta-loss parameters are
+                    updated based on the task loss.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide5">
+        <h2>Implementation Approaches</h2>
+        <div class="explanation-text">
+            Our framework can be implemented in various learning contexts, each with its own unique characteristics and
+            requirements. We explore three main implementation approaches that demonstrate the versatility of our
+            meta-learning framework.
+        </div>
+        <div class="definitions-container">
+            <div class="definition-card">
+                <div class="definition-title">Supervised Learning</div>
+                <div class="definition-text">
+                    In supervised learning contexts, our meta-loss network processes ground truth and predicted values to
+                    generate appropriate loss signals. The system learns through backpropagation, with the task loss
+                    typically based on standard metrics such as mean squared error or cross-entropy. This approach has
+                    proven particularly effective for both regression and classification tasks.
+                </div>
+            </div>
+            <div class="definition-card">
+                <div class="definition-title">Model-based Reinforcement Learning</div>
+                <div class="definition-text">
+                    The model-based approach integrates a learned dynamics model into the meta-learning process. Our
+                    meta-loss incorporates trajectory information to optimize policies, while the task loss is computed
+                    based on expected rewards. A key advantage is that the learned dynamics model becomes unnecessary during
+                    meta-test time, as the meta-loss implicitly captures the required gradients.
+                </div>
+            </div>
+            <div class="definition-card">
+                <div class="definition-title">Model-free Reinforcement Learning</div>
+                <div class="definition-text">
+                    In the model-free context, our framework enables direct policy optimization through trajectory-based
+                    rewards. This approach is particularly powerful for high-dimensional policy optimization, where
+                    traditional methods might struggle. The meta-loss learns to provide effective learning signals without
+                    requiring explicit modeling of the environment dynamics.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide6">
+        <h2>Experimental Results</h2>
+        <div class="explanation-text">
+            Our experimental results demonstrate significant improvements in both learning speed and final performance
+            across various tasks and domains. The meta-learned loss functions consistently outperform traditional approaches
+            while maintaining generalization capabilities.
+        </div>
+        <div class="results-graph">
+            <svg viewBox="0 0 800 300">
+                <!-- Enhanced performance visualization -->
+                <rect width="800" height="300" fill="#f8f9fa" />
+
+                <!-- Performance graph with labels -->
+                <g transform="translate(50,50)">
+                    <text x="350" y="20" text-anchor="middle" font-weight="bold">Performance Comparison: Meta-Loss vs
+                        Standard Loss</text>
+                    <path class="graph-line meta" d="M0,200 Q300,50 600,20" />
+                    <path class="graph-line standard" d="M0,200 Q300,150 600,100" />
+                    <text x="620" y="30" fill="#4CAF50">Meta-Loss</text>
+                    <text x="620" y="110" fill="#2196F3">Standard Loss</text>
+
+                    <!-- Axes labels -->
+                    <text x="300" y="250" text-anchor="middle">Training Steps</text>
+                    <text x="-40" y="100" transform="rotate(-90, -40, 100)" text-anchor="middle">Performance</text>
+                </g>
+            </svg>
+        </div>
+        <div class="evaluation-container">
+            <div class="definition-card">
+                <div class="definition-title">Supervised Learning Performance</div>
+                <div class="definition-text">
+                    Our meta-learned loss function demonstrates remarkable improvements in convergence speed and final
+                    performance. On regression and classification tasks, we observe consistently better performance compared
+                    to standard loss functions, with particularly strong results on previously unseen test tasks.
+                </div>
+            </div>
+            <div class="definition-card">
+                <div class="definition-title">Reinforcement Learning Results</div>
+                <div class="definition-text">
+                    In reinforcement learning scenarios, our approach achieves significantly faster learning rates, showing
+                    approximately 5 times faster convergence compared to baseline methods. The meta-learned loss effectively
+                    guides policy optimization across different architectures and task variations.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+        <div class="slide" id="slide7">
+        <h2>Applications and Loss Shaping</h2>
+        <div class="explanation-text">
+            A key innovation in our framework is the ability to incorporate additional information during meta-training to
+            shape the loss landscape. This shaping creates more efficient optimization paths without requiring the extra
+            information during meta-test time.
+        </div>
+
+        <div class="definitions-container">
+            <div class="definition-card">
+                <div class="definition-title">Sine Frequency Optimization</div>
+                <div class="definition-text">
+                    We demonstrate loss shaping on sine frequency regression, where traditional optimization faces
+                    challenges due to non-convex loss landscapes. By incorporating ground truth frequency information during
+                    meta-training, our method transforms the highly non-convex optimization problem into a more manageable
+                    convex one. This results in more reliable convergence without requiring frequency information during
+                    testing.
+                </div>
+            </div>
+
+            <div class="definition-card">
+                <div class="definition-title">Robot Inverse Dynamics</div>
+                <div class="definition-text">
+                    In robotics applications, we enhance the learning of inverse dynamics models by incorporating physics
+                    priors. During meta-training, we use ground truth inertia matrices from simulators to shape the loss
+                    landscape. This approach significantly improves sample efficiency and prediction accuracy compared to
+                    standard mean squared error optimization, while maintaining the ability to work without simulator access
+                    during deployment.
+                </div>
+            </div>
+
+            <div class="definition-card">
+                <div class="definition-title">MountainCar Environment</div>
+                <div class="definition-text">
+                    We address the challenging MountainCar problem where standard optimization often fails due to sparse
+                    rewards. By providing intermediate goal positions during meta-training, our meta-loss learns to guide
+                    exploration effectively. The resulting loss function enables successful task completion without
+                    requiring intermediate goals during testing, outperforming traditional methods like iLQR.
+                </div>
+            </div>
+        </div>
+
+        <div class="formula-explanation">
+            <h3>Loss Shaping Formula</h3>
+            <p>LT = β(y - fθ(x))² + γLextra</p>
+            <p>Where:</p>
+            <ul>
+                <li>LT: Total task loss</li>
+                <li>β: Standard loss weight</li>
+                <li>γ: Extra information weight</li>
+                <li>Lextra: Additional shaping information (e.g., physics priors, intermediate goals)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide" id="slide8">
+        <h2>Future Directions</h2>
+        <div class="explanation-text">
+            Our research opens several promising avenues for future investigation in meta-learning and loss function
+            optimization. These directions emerge from both the successes and current limitations of our approach.
+        </div>
+
+        <div class="definitions-container">
+            <div class="definition-card">
+                <div class="definition-title">Technical Advancement Opportunities</div>
+                <div class="definition-text">
+                    The development of methods for black-box optimization models represents a significant opportunity for
+                    expanding our framework's applicability. We envision integrating causal knowledge into the meta-learning
+                    process to improve the interpretability and efficiency of learned loss functions. There's also potential
+                    in combining multiple meta-loss functions to handle increasingly complex and diverse task families.
+                </div>
+            </div>
+
+            <div class="definition-card">
+                <div class="definition-title">Application Extensions</div>
+                <div class="definition-text">
+                    Our framework shows promise for developing more sophisticated curiosity-based reward mechanisms in
+                    reinforcement learning. We anticipate creating enhanced exploration strategies that can efficiently
+                    navigate complex state spaces. The methodology can be extended to new task families, particularly in
+                    robotics and control systems where traditional loss functions often struggle to capture task complexity.
+                </div>
+            </div>
+
+            <div class="definition-card">
+                <div class="definition-title">Research Impact</div>
+                <div class="definition-text">
+                    This work establishes a foundation for automating the discovery of task-appropriate loss functions. The
+                    demonstrated ability to learn and shape loss landscapes opens new possibilities for improving
+                    optimization across machine learning domains. Our findings suggest that learned loss functions could
+                    become a standard tool in the machine learning toolkit, particularly for complex tasks where traditional
+                    loss functions are suboptimal.
+                </div>
+            </div>
+        </div>
+
+        <div class="explanation-text">
+            Our code and additional resources are available at the ML³ Project Page, enabling further research and
+            development in this promising direction. We encourage the research community to build upon these foundations and
+            explore new applications of meta-learned loss functions.
+        </div>
+    </div>
+
+    <script>
+        function toggleFormula(id) {
+            const content = document.getElementById(id);
+            if (content) {
+                content.style.display = content.style.display === "block" ? "none" : "block";
+            }
+        }
+    </script>
+</body>
+</html>
