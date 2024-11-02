@@ -220,7 +220,7 @@
             Most deep learning approaches rely on manually designed loss functions chosen from a limited set of options. 
             What if we could learn the loss function itself?
         </div>
-    
+        <p><a href="https://www.google.com/url?q=https%3A%2F%2Farxiv.org%2Fpdf%2F1906.05374.pdf&sa=D&sntz=1&usg=AOvVaw199B5E7t6svQSIg42DtxzE" target="_blank">Link to Original Paper</a></p>
         <div class="definitions-container">
             <div class="definition-card">
                 <div class="definition-title">Problem</div>
@@ -254,21 +254,36 @@
             <div class="definition-card">
                 <div class="definition-title">Learning Model Parameters</div>
                 <div class="definition-text">
-                    Traditional meta-learning focuses on finding model parameters that adapt quickly to new tasks
+                    Traditional meta-learning focuses on finding model parameters that adapt quickly to new tasks. 
+                    <br><strong>References:</strong> 
+                    <ul>
+                        <li>Finn et al., Model-Agnostic Meta-Learning (MAML)</li>
+                        <li>Schmidhuber, "Evolutionary Principles in Self-Referential Learning" (1987)</li>
+                    </ul>
                 </div>
             </div>
     
             <div class="definition-card">
                 <div class="definition-title">Learning Optimizers</div>
                 <div class="definition-text">
-                    Some approaches learn how to update parameters using known loss functions
+                    Some approaches learn how to update parameters using known loss functions.
+                    <br><strong>References:</strong> 
+                    <ul>
+                        <li>Andrychowicz et al., "Learning to Learn by Gradient Descent by Gradient Descent" (2016)</li>
+                        <li>Franceschi et al., "Forward and Reverse Gradient-Based Hyperparameter Optimization" (2017)</li>
+                    </ul>
                 </div>
             </div>
     
             <div class="definition-card">
                 <div class="definition-title">Learning Loss Functions</div>
                 <div class="definition-text">
-                    A new approach that learns the loss function itself, making it independent of specific models or tasks
+                    A new approach that learns the loss function itself, making it independent of specific models or tasks.
+                    <br><strong>References:</strong> 
+                    <ul>
+                        <li>Sung et al., "Meta-Critic Networks for Sample Efficient Learning" (2017)</li>
+                        <li>Houthooft et al., "Evolved Policy Gradients" (2018)</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -277,6 +292,7 @@
             While previous methods focus on specific components, learning loss functions provides a general framework for meta-learning that can be applied across different architectures and tasks.
         </div>
     </div>
+
     
     
     <div class="slide" id="slide3">
@@ -371,6 +387,17 @@
         </svg>
     </div>
 
+    <div class="slide" id="slide4">
+        <h2>Core Concept</h2>
+        <div class="explanation-text">
+            The core concept of this research involves using a meta-loss network to learn adaptable loss functions across tasks and architectures.
+        </div>
+        <div class="video-container">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/QmePrknJh1g" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    
     <div class="slide" id="slide5">
         <svg viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
             <!-- Title -->
@@ -554,7 +581,7 @@
         <div class="definitions-container">
             <div class="definition-card">
                 <div class="definition-title">MSE Loss Landscape</div>
-                <img src="https://lh4.googleusercontent.com/NBkX4eGeSOWzXn6bYxAXwYl_oZ1hKbVY99SAb7iCRUM8YgSuCePXJxyh8AI_DzCZX8JWYctfSkktwzSPIscONHQ=w1280" alt="MSE Loss Landscape" style="width:100%; height:auto;">
+                <img src="https://lh5.googleusercontent.com/HQGGQrPrH1d8j3sNPmgQNSYhHnJ0ann2ul3N44jW3XcfHMuATQJHnrda-UE7gaxbAm4AMr3PMSXMGH5JpnxfuiI=w1280" alt="MSE Loss Landscape" style="width:100%; height:auto;">
             </div>
             <div class="definition-card">
                 <div class="definition-title">ML3 Loss Landscape</div>
