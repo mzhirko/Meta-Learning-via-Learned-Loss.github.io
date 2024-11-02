@@ -202,12 +202,13 @@
     <nav>
         <div class="nav-links">
             <a href="#slide1">Motivation</a>
-            <a href="#slide2">Introduction</a>
-            <a href="#slide3">Core Concept</a>  <!-- Changed from "Definitions" -->
-            <a href="#slide4">Learning Loss</a>  <!-- Changed from "Framework" -->
-            <a href="#slide5">Applications</a>   <!-- Combines Methods & Results -->
-            <a href="#slide6">Loss Shaping</a>   <!-- New section from video -->
-            <a href="#slide7">Future</a>         <!-- Moved up -->
+            <a href="#slide2">Related Work</a>
+            <a href="#slide3">Meta-Loss Network Process</a>
+            <a href="#slide4">Core Concept</a>
+            <a href="#slide5">Meta-Learning Approaches</a>
+            <a href="#slide6">Loss Shaping</a>
+            <a href="#slide7">Applications</a>
+            <a href="#slide8">Future Directions</a>
         </div>
     </nav>
 
@@ -277,120 +278,8 @@
         </div>
     </div>
     
-    <div class="slide" id="slide3">
-        <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
-            <!-- Title -->
-            <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">Learning to Learn: Meta Loss Training</text>
-        
-            <!-- Two-Phase Diagram -->
-            <!-- Phase 1: Training the Loss Function -->
-            <g transform="translate(0, 80)">
-                <rect x="50" y="0" width="700" height="240" fill="#f8f9fa" rx="10"/>
-                <text x="70" y="30" font-size="20" font-weight="bold" fill="#1a73e8">Phase 1: Training the Loss Function</text>
-                
-                <!-- Components -->
-                <g transform="translate(70, 60)">
-                    <!-- Step 1: Model makes prediction -->
-                    <rect x="0" y="0" width="160" height="80" fill="#4CAF50" opacity="0.8" rx="5"/>
-                    <text x="80" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">1. Model</text>
-                    <text x="80" y="45" text-anchor="middle" fill="white" font-size="12">Input (x)</text>
-                    <text x="80" y="65" text-anchor="middle" fill="white" font-size="12">Output: f(x)</text>
-        
-                    <!-- Step 2: Meta-Loss evaluates -->
-                    <rect x="240" y="0" width="160" height="80" fill="#2196F3" opacity="0.8" rx="5"/>
-                    <text x="320" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">2. Meta-Loss</text>
-                    <text x="320" y="45" text-anchor="middle" fill="white" font-size="12">Input: f(x), g</text>
-                    <text x="320" y="65" text-anchor="middle" fill="white" font-size="12">g = target/goal</text>
-        
-                    <!-- Step 3: Task Loss -->
-                    <rect x="480" y="0" width="160" height="80" fill="#FF9800" opacity="0.8" rx="5"/>
-                    <text x="560" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">3. Task Loss</text>
-                    <text x="560" y="45" text-anchor="middle" fill="white" font-size="12">Evaluates if model</text>
-                    <text x="560" y="65" text-anchor="middle" fill="white" font-size="12">improved</text>
-        
-                    <!-- Arrows -->
-                    <path d="M160,40 L240,40" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
-                    <path d="M400,40 L480,40" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
-                    
-                    <!-- Feedback loops -->
-                    <path d="M560,80 C560,120 80,120 80,80" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
-                    <text x="320" y="130" text-anchor="middle" font-size="12">4. Update both model and meta-loss</text>
-                </g>
-            </g>
-        
-            <!-- Phase 2: Using the Trained Loss -->
-            <g transform="translate(0, 340)">
-                <rect x="50" y="0" width="700" height="200" fill="#f8f9fa" rx="10"/>
-                <text x="70" y="30" font-size="20" font-weight="bold" fill="#1a73e8">Phase 2: Using the Trained Loss</text>
-        
-                <!-- Components -->
-                <g transform="translate(70, 60)">
-                    <!-- New Model -->
-                    <rect x="0" y="0" width="160" height="80" fill="#4CAF50" opacity="0.8" rx="5"/>
-                    <text x="80" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">1. New Model</text>
-                    <text x="80" y="45" text-anchor="middle" fill="white" font-size="12">Input (x)</text>
-                    <text x="80" y="65" text-anchor="middle" fill="white" font-size="12">Output: f(x)</text>
-        
-                    <!-- Trained Meta-Loss -->
-                    <rect x="240" y="0" width="160" height="80" fill="#2196F3" opacity="0.8" rx="5"/>
-                    <text x="320" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">2. Trained Meta-Loss</text>
-                    <text x="320" y="45" text-anchor="middle" fill="white" font-size="12">Input: f(x), g</text>
-                    <text x="320" y="65" text-anchor="middle" fill="white" font-size="12">Output: loss value</text>
-        
-                    <!-- Arrows -->
-                    <path d="M160,40 L240,40" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
-                    
-                    <!-- Feedback loop -->
-                    <path d="M320,80 C320,120 80,120 80,80" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
-                    <text x="200" y="130" text-anchor="middle" font-size="12">3. Updates model efficiently</text>
-                </g>
-            </g>
-        
-            <!-- Why We Need This -->
-            <g transform="translate(50, 580)">
-                <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="10"/>
-                <text x="20" y="30" font-size="20" font-weight="bold" fill="#1a73e8">Why Do We Need This?</text>
-                
-                <g transform="translate(20, 50)">
-                    <!-- Problem Cards -->
-                    <g transform="translate(0, 0)">
-                        <rect x="0" y="0" width="200" height="100" fill="white" rx="5" stroke="#ddd"/>
-                        <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">Traditional Losses</text>
-                        <text x="100" y="55" text-anchor="middle" font-size="12">• Manual design</text>
-                        <text x="100" y="75" text-anchor="middle" font-size="12">• Fixed behavior</text>
-                        <text x="100" y="95" text-anchor="middle" font-size="12">• Task-specific</text>
-                    </g>
-                    
-                    <!-- Benefits Cards -->
-                    <g transform="translate(240, 0)">
-                        <rect x="0" y="0" width="200" height="100" fill="white" rx="5" stroke="#ddd"/>
-                        <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">Meta Loss Benefits</text>
-                        <text x="100" y="55" text-anchor="middle" font-size="12">• Automatic adaptation</text>
-                        <text x="100" y="75" text-anchor="middle" font-size="12">• Works across tasks</text>
-                        <text x="100" y="95" text-anchor="middle" font-size="12">• Faster learning</text>
-                    </g>
-                    
-                    <!-- Results Card -->
-                    <g transform="translate(480, 0)">
-                        <rect x="0" y="0" width="200" height="100" fill="white" rx="5" stroke="#ddd"/>
-                        <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">Results</text>
-                        <text x="100" y="55" text-anchor="middle" font-size="12">• 5-8x faster training</text>
-                        <text x="100" y="75" text-anchor="middle" font-size="12">• Better performance</text>
-                        <text x="100" y="95" text-anchor="middle" font-size="12">• Architecture independent</text>
-                    </g>
-                </g>
-            </g>
-        
-            <!-- Arrow marker definition -->
-            <defs>
-                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                    <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
-                </marker>
-            </defs>
-        </svg>
-    </div>
     
-    <div class="slide" id="slide4">
+    <div class="slide" id="slide3">
         <svg viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
             <!-- Title -->
             <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">How Meta-Loss Network Learns</text>
@@ -658,68 +547,53 @@
     </div>
     
     <div class="slide" id="slide7">
-        <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-            <!-- Title -->
-            <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">Applications</text>
-        
-            <!-- Applications Grid -->
-            <g transform="translate(50, 60)">
-                <!-- Supervised Learning Box -->
-                <rect x="0" y="0" width="340" height="220" fill="#f8f9fa" rx="5"/>
-                <text x="20" y="30" font-size="16" font-weight="bold">Supervised Learning</text>
-                
-                <!-- Classification -->
-                <rect x="20" y="45" width="300" height="70" fill="white" stroke="#ddd" rx="5"/>
-                <text x="40" y="70" font-size="14" font-weight="bold">MNIST Classification</text>
-                <text x="40" y="90" font-size="12">• Higher accuracy (88% vs 82%)</text>
-                <text x="40" y="105" font-size="12">• 30% fewer training samples needed</text>
-        
-                <!-- Regression -->
-                <rect x="20" y="130" width="300" height="70" fill="white" stroke="#ddd" rx="5"/>
-                <text x="40" y="155" font-size="14" font-weight="bold">Sine Regression</text>
-                <text x="40" y="175" font-size="12">• Better pattern recognition</text>
-                <text x="40" y="190" font-size="12">• Generalizes to unseen frequencies</text>
-        
-                <!-- Reinforcement Learning Box -->
-                <rect x="360" y="0" width="340" height="220" fill="#f8f9fa" rx="5"/>
-                <text x="380" y="30" font-size="16" font-weight="bold">Reinforcement Learning</text>
-        
-                <!-- Model-based RL -->
-                <rect x="380" y="45" width="300" height="70" fill="white" stroke="#ddd" rx="5"/>
-                <text x="400" y="70" font-size="14" font-weight="bold">Model-based RL</text>
-                <text x="400" y="90" font-size="12">• Reacher robot task</text>
-                <text x="400" y="105" font-size="12">• 5x faster goal reaching</text>
-        
-                <!-- Model-free RL -->
-                <rect x="380" y="130" width="300" height="70" fill="white" stroke="#ddd" rx="5"/>
-                <text x="400" y="155" font-size="14" font-weight="bold">Model-free RL</text>
-                <text x="400" y="175" font-size="12">• MuJoCo environments (Ant, Reacher)</text>
-                <text x="400" y="190" font-size="12">• 8x sample efficiency improvement</text>
-        
-                <!-- Loss Shaping Box -->
-                <rect x="0" y="240" width="700" height="220" fill="#f8f9fa" rx="5"/>
-                <text x="20" y="270" font-size="16" font-weight="bold">Loss Shaping Applications</text>
-        
-                <!-- MountainCar -->
-                <rect x="20" y="285" width="210" height="70" fill="white" stroke="#ddd" rx="5"/>
-                <text x="40" y="310" font-size="14" font-weight="bold">MountainCar</text>
-                <text x="40" y="330" font-size="12">Meta-loss learns exploration</text>
-                <text x="40" y="345" font-size="12">strategy during training</text>
-        
-                <!-- Robot Dynamics -->
-                <rect x="245" y="285" width="210" height="70" fill="white" stroke="#ddd" rx="5"/>
-                <text x="265" y="310" font-size="14" font-weight="bold">Robot Dynamics</text>
-                <text x="265" y="330" font-size="12">Uses physics priors during</text>
-                <text x="265" y="345" font-size="12">training for better learning</text>
-        
-                <!-- Expert Demos -->
-                <rect x="470" y="285" width="210" height="70" fill="white" stroke="#ddd" rx="5"/>
-                <text x="490" y="310" font-size="14" font-weight="bold">Expert Demonstrations</text>
-                <text x="490" y="330" font-size="12">Incorporates expert knowledge</text>
-                <text x="490" y="345" font-size="12">for faster policy learning</text>
-            </g>
-        </svg>
+        <h2>Experiments & Applications</h2>
+    
+        <!-- Shaping Loss Landscape -->
+        <h3>Shaping Loss Landscape</h3>
+        <div class="definitions-container">
+            <div class="definition-card">
+                <div class="definition-title">MSE Loss Landscape</div>
+                <img src="https://lh4.googleusercontent.com/NBkX4aGeSOWzXn6bYxAXwYl_oZ1hKbVY99SAb7iCRUM8YgSuCePXJxyh8AI_DzCZX8JWYctfSkktwzSPIscONHQ=w1280" alt="MSE Loss Landscape" style="width:100%; height:auto;">
+            </div>
+            <div class="definition-card">
+                <div class="definition-title">ML3 Loss Landscape</div>
+                <img src="https://lh5.googleusercontent.com/IooZR4aM0ypz3Uwen-eTXLXXpDUH0-1SgmZB_H01uV9ej5OfmN0F3ZeK1sJ2iGZqJQmt2RjrNMxz9OcCuf7z1w=w1280" alt="ML3 Loss Landscape" style="width:100%; height:auto;">
+            </div>
+        </div>
+    
+        <!-- Mountain Car -->
+        <h3>Mountain Car</h3>
+        <div class="definitions-container">
+            <div class="definition-card">
+                <div class="definition-title">MSE Loss</div>
+                <img src="https://lh3.googleusercontent.com/wqMF6-NyWdXLXmvnAEO0L2aHm_rpS6CnEE-YEQbutEKAX2_YrFsyF3ltJDu9bJX0d9PEKOSdSTEqr87y1Xw0I0c=w1280" alt="Mountain Car MSE Loss" style="width:100%; height:auto;">
+            </div>
+            <div class="definition-card">
+                <div class="definition-title">ML3 Loss</div>
+                <img src="https://lh6.googleusercontent.com/7YFqMNFTTut9a77vY5g1vIZl9-9lQWYBNsGU6f1A5RAgzcmYCjgbmf6irKH0OEsxWjwO8bnhpWhOeORXzGpS1Dw=w1280" alt="Mountain Car ML3 Loss" style="width:100%; height:auto;">
+            </div>
+        </div>
+    
+        <!-- Model-Based RL -->
+        <h3>Model-Based RL</h3>
+        <div class="explanation-text">
+            <img src="https://lh4.googleusercontent.com/9oe8NyT8kADIu73a94DzYbFNnmkC6uze33T3_g_VXfsfsnMTiDWt9hE7u8lWgMJa6R5BiiYGJpxgyOK8Q5J7kzM=w1280" alt="Model-Based RL" style="width:100%; height:auto;">
+        </div>
+    
+        <!-- Sine Regression -->
+        <h3>Sine Regression</h3>
+        <div class="explanation-text">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_LlbwTEfnrlyJLQCoesYiF3TDxuVCKA64zQ&s" alt="Sine Regression" style="width:100%; height:auto;">
+        </div>
+    
+        <!-- MNIST Classification -->
+        <h3>MNIST Classification</h3>
+        <div class="explanation-text">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpCdj9O3TkB3rQR9cjw9kRhkBf0ludGeZsUWv5VIIRCBkNanCeps_C02zFKIUCbyO5fCo&usqp=CAU" alt="MNIST Classification" style="width:100%; height:auto;">
+        </div>
     </div>
+
 
     <div class="slide" id="slide8">
         <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
