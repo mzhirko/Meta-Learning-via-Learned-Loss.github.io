@@ -203,340 +203,568 @@
         <div class="nav-links">
             <a href="#slide1">Motivation</a>
             <a href="#slide2">Introduction</a>
-            <a href="#slide3">Definitions</a>
-            <a href="#slide4">Framework</a>
-            <a href="#slide5">Methods</a>
-            <a href="#slide6">Results</a>
-            <a href="#slide7">Applications</a>
-            <a href="#slide8">Future</a>
+            <a href="#slide3">Core Concept</a>  <!-- Changed from "Definitions" -->
+            <a href="#slide4">Learning Loss</a>  <!-- Changed from "Framework" -->
+            <a href="#slide5">Applications</a>   <!-- Combines Methods & Results -->
+            <a href="#slide6">Loss Shaping</a>   <!-- New section from video -->
+            <a href="#slide7">Future</a>         <!-- Moved up -->
         </div>
     </nav>
 
     <div class="slide" id="slide1">
         <h1>Meta-Learning via Learned Loss</h1>
         <h2>Motivation</h2>
+        
         <div class="explanation-text">
-            In machine learning, loss functions and regularization mechanisms are typically chosen through heuristic
-            approaches from a limited set of options. This manual selection process often fails to capture optimal
-            learning signals for specific tasks, creating a significant limitation in model training efficiency.
+            Most deep learning approaches rely on manually designed loss functions chosen from a limited set of options. 
+            What if we could learn the loss function itself?
         </div>
+    
         <div class="definitions-container">
-            <div class="definition-card ml-model">
-                <div class="definition-title">Current Challenge</div>
-                <div class="definition-text">The traditional approach of manually selecting loss functions limits our
-                    ability to find optimal training signals for specific tasks and architectures.</div>
+            <div class="definition-card">
+                <div class="definition-title">Problem</div>
+                <div class="definition-text">
+                    Hand-crafted loss functions often fail to provide optimal learning signals for specific tasks
+                </div>
             </div>
-            <div class="definition-card input-output">
-                <div class="definition-title">Limitations</div>
-                <div class="definition-text">Standard loss functions may not provide the most efficient learning path
-                    for complex tasks, leading to slower convergence and suboptimal performance.</div>
-            </div>
-            <div class="definition-card properties">
+            
+            <div class="definition-card">
                 <div class="definition-title">Solution</div>
-                <div class="definition-text">We introduce a framework for automatically discovering task-appropriate
-                    loss functions that enable faster and more robust training across different architectures and tasks.
+                <div class="definition-text">
+                    Learn a parametric loss function that automatically adapts to different tasks and architectures
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="slide" id="slide2">
-        <h2>Introduction to Meta-Learning via Learned Loss</h2>
-        <div class="explanation-text">
-            Our framework introduces a novel approach to meta-learning that learns loss functions capable of
-            generalizing across multiple tasks and architectures. Through a differentiable framework, we develop loss
-            functions that are independent of the model being optimized (the optimizee), making them highly versatile
-            for various applications including classification, regression, and reinforcement learning problems.
-        </div>
-        <div class="definition-card">
-            <div class="definition-title">Key Innovation</div>
-            <div class="definition-text">
-                Instead of manually designing loss functions, our approach learns them directly from data, creating a
-                meta-learning system that can adapt to different types of problems while maintaining optimization
-                efficiency. This learned loss function becomes a powerful tool that captures complex learning dynamics
-                that traditional hand-crafted losses might miss.
-            </div>
-        </div>
-    </div>
-
-    <div class="slide" id="slide3">
-        <h2>Key Definitions</h2>
-        <div class="explanation-text">
-            Understanding the framework requires familiarity with several key concepts that form the foundation of our
-            approach. Here are the essential components that work together in our meta-learning system:
-        </div>
-        <div class="definitions-container">
+    
             <div class="definition-card">
-                <div class="definition-title">Meta-Loss (Mφ)</div>
-                <div class="definition-text">A parametric loss function with parameters φ that generates loss values for
-                    training. This function learns to provide optimal training signals for a variety of tasks and model
-                    architectures.</div>
-            </div>
-            <div class="definition-card">
-                <div class="definition-title">Optimizee (fθ)</div>
-                <div class="definition-text">The model being trained using the meta-loss function. This could be a
-                    classifier, regressor, or control policy. The optimizee's parameters θ are updated using gradients
-                    from the meta-loss.</div>
-            </div>
-            <div class="definition-card">
-                <div class="definition-title">Task Loss (LT)</div>
-                <div class="definition-text">The standard loss used to evaluate and update meta-loss parameters. This
-                    provides the learning signal for improving the meta-loss function itself.</div>
-            </div>
-        </div>
-        <div class="formula-explanation">
-            <h3>Key Formula: Inner Loop Update</h3>
-            <p>θnew = θ - α∇θLlearned</p>
-            <p>Where:</p>
-            <ul>
-                <li>θnew: Updated model parameters</li>
-                <li>α: Learning rate</li>
-                <li>∇θLlearned: Gradient of learned loss with respect to model parameters</li>
-            </ul>
-        </div>
-    </div>
-    <div class="slide" id="slide4">
-        <h2>Framework Overview</h2>
-        <div class="explanation-text">
-            Our framework consists of two main optimization loops working together to learn and apply the meta-loss
-            function. This dual-loop structure enables effective learning of loss functions that can generalize across
-            different tasks and architectures.
-        </div>
-        <div class="framework-diagram">
-            <svg viewBox="0 0 800 400">
-                <!-- Previous SVG elements -->
-                <rect width="800" height="400" fill="#f8f9fa" />
-
-                <!-- Meta-Loss Network -->
-                <rect x="300" y="50" width="200" height="100" rx="10" fill="#4CAF50" opacity="0.8" />
-                <text x="400" y="100" text-anchor="middle" fill="white" font-weight="bold">Meta-Loss Network</text>
-
-                <!-- Input arrows with labels -->
-                <path d="M200,100 L300,100" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
-                <text x="250" y="80" text-anchor="middle" font-size="14">Task Information</text>
-                <text x="250" y="95" text-anchor="middle" font-size="12">(targets, goals, rewards)</text>
-
-                <!-- Inner Loop with explanation -->
-                <rect x="300" y="200" width="200" height="80" rx="10" fill="#2196F3" opacity="0.8" />
-                <text x="400" y="230" text-anchor="middle" fill="white" font-weight="bold">Inner Loop</text>
-                <text x="400" y="250" text-anchor="middle" fill="white" font-size="12">Updates optimizee</text>
-
-                <!-- Outer Loop with explanation -->
-                <path d="M500,240 C600,240 600,100 500,100" stroke="#333" stroke-width="2" fill="none"
-                    marker-end="url(#arrowhead)" />
-                <text x="580" y="180" text-anchor="middle" font-weight="bold">Outer Loop</text>
-                <text x="580" y="195" text-anchor="middle" font-size="12">Updates meta-loss</text>
-
-                <defs>
-                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
-                    </marker>
-                </defs>
-            </svg>
-        </div>
-        <div class="formula-explanation">
-            <h3>Core Framework Equations</h3>
-            <div style="margin: 20px 0;">
-                <p><strong>Inner Loop Update:</strong></p>
-                <p>θnew = θ - α∇θLlearned</p>
-                <p>Where Llearned = Mφ(y, fθ(x))</p>
-                <p style="font-size: 0.9em; color: #666;">This equation shows how the optimizee's parameters are updated
-                    using the meta-loss gradient.</p>
-            </div>
-            <div style="margin: 20px 0;">
-                <p><strong>Outer Loop Update:</strong></p>
-                <p>∇φLT = ∇fLT ∇θnew fθnew ∇φθnew</p>
-                <p style="font-size: 0.9em; color: #666;">This equation demonstrates how the meta-loss parameters are
-                    updated based on the task loss.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="slide" id="slide5">
-        <h2>Implementation Approaches</h2>
-        <div class="explanation-text">
-            Our framework can be implemented in various learning contexts, each with its own unique characteristics and
-            requirements. We explore three main implementation approaches that demonstrate the versatility of our
-            meta-learning framework.
-        </div>
-        <div class="definitions-container">
-            <div class="definition-card">
-                <div class="definition-title">Supervised Learning</div>
+                <div class="definition-title">Benefits</div>
                 <div class="definition-text">
-                    In supervised learning contexts, our meta-loss network processes ground truth and predicted values to
-                    generate appropriate loss signals. The system learns through backpropagation, with the task loss
-                    typically based on standard metrics such as mean squared error or cross-entropy. This approach has
-                    proven particularly effective for both regression and classification tasks.
-                </div>
-            </div>
-            <div class="definition-card">
-                <div class="definition-title">Model-based Reinforcement Learning</div>
-                <div class="definition-text">
-                    The model-based approach integrates a learned dynamics model into the meta-learning process. Our
-                    meta-loss incorporates trajectory information to optimize policies, while the task loss is computed
-                    based on expected rewards. A key advantage is that the learned dynamics model becomes unnecessary during
-                    meta-test time, as the meta-loss implicitly captures the required gradients.
-                </div>
-            </div>
-            <div class="definition-card">
-                <div class="definition-title">Model-free Reinforcement Learning</div>
-                <div class="definition-text">
-                    In the model-free context, our framework enables direct policy optimization through trajectory-based
-                    rewards. This approach is particularly powerful for high-dimensional policy optimization, where
-                    traditional methods might struggle. The meta-loss learns to provide effective learning signals without
-                    requiring explicit modeling of the environment dynamics.
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="slide" id="slide6">
-        <h2>Experimental Results</h2>
-        <div class="explanation-text">
-            Our experimental results demonstrate significant improvements in both learning speed and final performance
-            across various tasks and domains. The meta-learned loss functions consistently outperform traditional approaches
-            while maintaining generalization capabilities.
-        </div>
-        <div class="results-graph">
-            <svg viewBox="0 0 800 300">
-                <!-- Enhanced performance visualization -->
-                <rect width="800" height="300" fill="#f8f9fa" />
-
-                <!-- Performance graph with labels -->
-                <g transform="translate(50,50)">
-                    <text x="350" y="20" text-anchor="middle" font-weight="bold">Performance Comparison: Meta-Loss vs
-                        Standard Loss</text>
-                    <path class="graph-line meta" d="M0,200 Q300,50 600,20" />
-                    <path class="graph-line standard" d="M0,200 Q300,150 600,100" />
-                    <text x="620" y="30" fill="#4CAF50">Meta-Loss</text>
-                    <text x="620" y="110" fill="#2196F3">Standard Loss</text>
-
-                    <!-- Axes labels -->
-                    <text x="300" y="250" text-anchor="middle">Training Steps</text>
-                    <text x="-40" y="100" transform="rotate(-90, -40, 100)" text-anchor="middle">Performance</text>
-                </g>
-            </svg>
-        </div>
-        <div class="evaluation-container">
-            <div class="definition-card">
-                <div class="definition-title">Supervised Learning Performance</div>
-                <div class="definition-text">
-                    Our meta-learned loss function demonstrates remarkable improvements in convergence speed and final
-                    performance. On regression and classification tasks, we observe consistently better performance compared
-                    to standard loss functions, with particularly strong results on previously unseen test tasks.
-                </div>
-            </div>
-            <div class="definition-card">
-                <div class="definition-title">Reinforcement Learning Results</div>
-                <div class="definition-text">
-                    In reinforcement learning scenarios, our approach achieves significantly faster learning rates, showing
-                    approximately 5 times faster convergence compared to baseline methods. The meta-learned loss effectively
-                    guides policy optimization across different architectures and task variations.
+                    • Faster training
+                    • Better performance
+                    • Architecture independence
                 </div>
             </div>
         </div>
     </div>
     
-        <div class="slide" id="slide7">
-        <h2>Applications and Loss Shaping</h2>
-        <div class="explanation-text">
-            A key innovation in our framework is the ability to incorporate additional information during meta-training to
-            shape the loss landscape. This shaping creates more efficient optimization paths without requiring the extra
-            information during meta-test time.
-        </div>
-
+    <div class="slide" id="slide2">
+        <h2>Related Work</h2>
+        
         <div class="definitions-container">
             <div class="definition-card">
-                <div class="definition-title">Sine Frequency Optimization</div>
+                <div class="definition-title">Learning Model Parameters</div>
                 <div class="definition-text">
-                    We demonstrate loss shaping on sine frequency regression, where traditional optimization faces
-                    challenges due to non-convex loss landscapes. By incorporating ground truth frequency information during
-                    meta-training, our method transforms the highly non-convex optimization problem into a more manageable
-                    convex one. This results in more reliable convergence without requiring frequency information during
-                    testing.
+                    Traditional meta-learning focuses on finding model parameters that adapt quickly to new tasks
                 </div>
             </div>
-
+    
             <div class="definition-card">
-                <div class="definition-title">Robot Inverse Dynamics</div>
+                <div class="definition-title">Learning Optimizers</div>
                 <div class="definition-text">
-                    In robotics applications, we enhance the learning of inverse dynamics models by incorporating physics
-                    priors. During meta-training, we use ground truth inertia matrices from simulators to shape the loss
-                    landscape. This approach significantly improves sample efficiency and prediction accuracy compared to
-                    standard mean squared error optimization, while maintaining the ability to work without simulator access
-                    during deployment.
+                    Some approaches learn how to update parameters using known loss functions
                 </div>
             </div>
-
+    
             <div class="definition-card">
-                <div class="definition-title">MountainCar Environment</div>
+                <div class="definition-title">Learning Loss Functions</div>
                 <div class="definition-text">
-                    We address the challenging MountainCar problem where standard optimization often fails due to sparse
-                    rewards. By providing intermediate goal positions during meta-training, our meta-loss learns to guide
-                    exploration effectively. The resulting loss function enables successful task completion without
-                    requiring intermediate goals during testing, outperforming traditional methods like iLQR.
+                    A new approach that learns the loss function itself, making it independent of specific models or tasks
                 </div>
             </div>
         </div>
-
-        <div class="formula-explanation">
-            <h3>Loss Shaping Formula</h3>
-            <p>LT = β(y - fθ(x))² + γLextra</p>
-            <p>Where:</p>
-            <ul>
-                <li>LT: Total task loss</li>
-                <li>β: Standard loss weight</li>
-                <li>γ: Extra information weight</li>
-                <li>Lextra: Additional shaping information (e.g., physics priors, intermediate goals)</li>
-            </ul>
+    
+        <div class="explanation-text">
+            While previous methods focus on specific components, learning loss functions provides a general framework for meta-learning that can be applied across different architectures and tasks.
         </div>
+    </div>
+    
+    <div class="slide" id="slide3">
+        <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+            <!-- Title -->
+            <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">Learning to Learn: Meta Loss Training</text>
+        
+            <!-- Two-Phase Diagram -->
+            <!-- Phase 1: Training the Loss Function -->
+            <g transform="translate(0, 80)">
+                <rect x="50" y="0" width="700" height="240" fill="#f8f9fa" rx="10"/>
+                <text x="70" y="30" font-size="20" font-weight="bold" fill="#1a73e8">Phase 1: Training the Loss Function</text>
+                
+                <!-- Components -->
+                <g transform="translate(70, 60)">
+                    <!-- Step 1: Model makes prediction -->
+                    <rect x="0" y="0" width="160" height="80" fill="#4CAF50" opacity="0.8" rx="5"/>
+                    <text x="80" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">1. Model</text>
+                    <text x="80" y="45" text-anchor="middle" fill="white" font-size="12">Input (x)</text>
+                    <text x="80" y="65" text-anchor="middle" fill="white" font-size="12">Output: f(x)</text>
+        
+                    <!-- Step 2: Meta-Loss evaluates -->
+                    <rect x="240" y="0" width="160" height="80" fill="#2196F3" opacity="0.8" rx="5"/>
+                    <text x="320" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">2. Meta-Loss</text>
+                    <text x="320" y="45" text-anchor="middle" fill="white" font-size="12">Input: f(x), g</text>
+                    <text x="320" y="65" text-anchor="middle" fill="white" font-size="12">g = target/goal</text>
+        
+                    <!-- Step 3: Task Loss -->
+                    <rect x="480" y="0" width="160" height="80" fill="#FF9800" opacity="0.8" rx="5"/>
+                    <text x="560" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">3. Task Loss</text>
+                    <text x="560" y="45" text-anchor="middle" fill="white" font-size="12">Evaluates if model</text>
+                    <text x="560" y="65" text-anchor="middle" fill="white" font-size="12">improved</text>
+        
+                    <!-- Arrows -->
+                    <path d="M160,40 L240,40" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M400,40 L480,40" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Feedback loops -->
+                    <path d="M560,80 C560,120 80,120 80,80" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+                    <text x="320" y="130" text-anchor="middle" font-size="12">4. Update both model and meta-loss</text>
+                </g>
+            </g>
+        
+            <!-- Phase 2: Using the Trained Loss -->
+            <g transform="translate(0, 340)">
+                <rect x="50" y="0" width="700" height="200" fill="#f8f9fa" rx="10"/>
+                <text x="70" y="30" font-size="20" font-weight="bold" fill="#1a73e8">Phase 2: Using the Trained Loss</text>
+        
+                <!-- Components -->
+                <g transform="translate(70, 60)">
+                    <!-- New Model -->
+                    <rect x="0" y="0" width="160" height="80" fill="#4CAF50" opacity="0.8" rx="5"/>
+                    <text x="80" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">1. New Model</text>
+                    <text x="80" y="45" text-anchor="middle" fill="white" font-size="12">Input (x)</text>
+                    <text x="80" y="65" text-anchor="middle" fill="white" font-size="12">Output: f(x)</text>
+        
+                    <!-- Trained Meta-Loss -->
+                    <rect x="240" y="0" width="160" height="80" fill="#2196F3" opacity="0.8" rx="5"/>
+                    <text x="320" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">2. Trained Meta-Loss</text>
+                    <text x="320" y="45" text-anchor="middle" fill="white" font-size="12">Input: f(x), g</text>
+                    <text x="320" y="65" text-anchor="middle" fill="white" font-size="12">Output: loss value</text>
+        
+                    <!-- Arrows -->
+                    <path d="M160,40 L240,40" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Feedback loop -->
+                    <path d="M320,80 C320,120 80,120 80,80" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+                    <text x="200" y="130" text-anchor="middle" font-size="12">3. Updates model efficiently</text>
+                </g>
+            </g>
+        
+            <!-- Why We Need This -->
+            <g transform="translate(50, 580)">
+                <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="10"/>
+                <text x="20" y="30" font-size="20" font-weight="bold" fill="#1a73e8">Why Do We Need This?</text>
+                
+                <g transform="translate(20, 50)">
+                    <!-- Problem Cards -->
+                    <g transform="translate(0, 0)">
+                        <rect x="0" y="0" width="200" height="100" fill="white" rx="5" stroke="#ddd"/>
+                        <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">Traditional Losses</text>
+                        <text x="100" y="55" text-anchor="middle" font-size="12">• Manual design</text>
+                        <text x="100" y="75" text-anchor="middle" font-size="12">• Fixed behavior</text>
+                        <text x="100" y="95" text-anchor="middle" font-size="12">• Task-specific</text>
+                    </g>
+                    
+                    <!-- Benefits Cards -->
+                    <g transform="translate(240, 0)">
+                        <rect x="0" y="0" width="200" height="100" fill="white" rx="5" stroke="#ddd"/>
+                        <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">Meta Loss Benefits</text>
+                        <text x="100" y="55" text-anchor="middle" font-size="12">• Automatic adaptation</text>
+                        <text x="100" y="75" text-anchor="middle" font-size="12">• Works across tasks</text>
+                        <text x="100" y="95" text-anchor="middle" font-size="12">• Faster learning</text>
+                    </g>
+                    
+                    <!-- Results Card -->
+                    <g transform="translate(480, 0)">
+                        <rect x="0" y="0" width="200" height="100" fill="white" rx="5" stroke="#ddd"/>
+                        <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">Results</text>
+                        <text x="100" y="55" text-anchor="middle" font-size="12">• 5-8x faster training</text>
+                        <text x="100" y="75" text-anchor="middle" font-size="12">• Better performance</text>
+                        <text x="100" y="95" text-anchor="middle" font-size="12">• Architecture independent</text>
+                    </g>
+                </g>
+            </g>
+        
+            <!-- Arrow marker definition -->
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+                </marker>
+            </defs>
+        </svg>
+    </div>
+    
+    <div class="slide" id="slide4">
+        <svg viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
+            <!-- Title -->
+            <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">How Meta-Loss Network Learns</text>
+        
+            <!-- Step-by-Step Process -->
+            <g transform="translate(50, 60)">
+                <!-- Step 1: Starting Point -->
+                <g transform="translate(0, 0)">
+                    <rect x="0" y="0" width="700" height="100" fill="#f8f9fa" rx="5"/>
+                    <text x="20" y="30" font-size="16" font-weight="bold">1. Starting Point</text>
+                    
+                    <rect x="20" y="45" width="120" height="40" fill="#4CAF50" opacity="0.8" rx="5"/>
+                    <text x="80" y="70" text-anchor="middle" fill="white" font-size="12">Model Output</text>
+                    
+                    <rect x="200" y="45" width="120" height="40" fill="#2196F3" opacity="0.8" rx="5"/>
+                    <text x="260" y="70" text-anchor="middle" fill="white" font-size="12">Target Value</text>
+                    
+                    <path d="M140,65 L200,65" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <text x="390" y="60" font-size="14">Example: Model predicts 0.8, target is 1.0</text>
+                    <text x="370" y="80" font-size="10">Meta-loss network, like standard loss, needs prediction and target</text>
+                </g>
+        
+                <!-- Step 2: Meta-Loss Evaluation -->
+                <g transform="translate(0, 120)">
+                    <rect x="0" y="0" width="700" height="120" fill="#f8f9fa" rx="5"/>
+                    <text x="20" y="30" font-size="16" font-weight="bold">2. Meta-Loss Network Process</text>
+                    
+                    <rect x="20" y="45" width="200" height="60" fill="#FF9800" opacity="0.8" rx="5"/>
+                    <text x="120" y="65" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Meta-Loss Network</text>
+                    <text x="120" y="85" text-anchor="middle" fill="white" font-size="12">Learns optimal error measure</text>
+                    
+                    <text x="300" y="75" font-size="14">Instead of using fixed formula (like MSE),</text>
+                    <text x="300" y="95" font-size="14">meta-loss updates its parameters based on model's progress</text>
+                </g>
+        
+                <!-- Step 3: Double Loop -->
+                <g transform="translate(0, 260)">
+                    <rect x="0" y="0" width="700" height="160" fill="#f8f9fa" rx="5"/>
+                    <text x="20" y="30" font-size="16" font-weight="bold">3. Double Learning Loop</text>
+                    
+                    <!-- Inner Loop -->
+                    <rect x="40" y="45" width="300" height="100" fill="#4CAF50" opacity="0.8" rx="5"/>
+                    <text x="190" y="70" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Inner Loop: Regular Training</text>
+                    <text x="190" y="90" text-anchor="middle" fill="white" font-size="12">1. Model makes prediction</text>
+                    <text x="190" y="110" text-anchor="middle" fill="white" font-size="12">2. Meta-loss provides loss value</text>
+                    <text x="190" y="130" text-anchor="middle" fill="white" font-size="12">3. Model updates to minimize this loss</text>
+                    <!-- Outer Loop -->
+                    <rect x="380" y="45" width="300" height="100" fill="#2196F3" opacity="0.8" rx="5"/>
+                    <text x="530" y="70" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Outer Loop: Training Meta-Loss</text>
+                    <text x="530" y="90" text-anchor="middle" fill="white" font-size="12">1. Check with MSE if model improved</text>
+                    <text x="530" y="110" text-anchor="middle" fill="white" font-size="12">2. Update meta-loss parameters to minimize MSE</text>
+                </g>
+        
+                <!-- Example Results -->
+                <g transform="translate(0, 440)">
+                    <rect x="0" y="0" width="700" height="160" fill="#f8f9fa" rx="5"/>
+                    <text x="20" y="30" font-size="16" font-weight="bold">4. Practical Example: Sine Curve Fitting</text>
+                    
+                    <!-- Before Training -->
+                    <rect x="40" y="45" width="180" height="100" fill="white" stroke="#ddd" rx="5"/>
+                    <text x="130" y="65" text-anchor="middle" font-size="14" font-weight="bold">Before</text>
+                    <path d="M 50,95 L 200,95" 
+                          stroke="#FF9800" fill="none" stroke-width="2"/>
+                    <text x="130" y="135" text-anchor="middle" font-size="12">Poor fit</text>
+                    
+                    <!-- After Training -->
+                    <rect x="240" y="45" width="180" height="100" fill="white" stroke="#ddd" rx="5"/>
+                    <text x="330" y="65" text-anchor="middle" font-size="14" font-weight="bold">After</text>
+                    <path d="M 250,95 Q 287.5,75 325,95 Q 362.5,115 400,95" 
+                          stroke="#4CAF50" fill="none" stroke-width="2"/>
+                    <text x="330" y="135" text-anchor="middle" font-size="12">Better fit</text>
+                    
+                    <!-- Key Benefits -->
+                    <rect x="440" y="45" width="240" height="100" fill="white" stroke="#ddd" rx="5"/>
+                    <text x="560" y="65" text-anchor="middle" font-size="14" font-weight="bold">Learned Benefits</text>
+                    <text x="560" y="90" text-anchor="middle" font-size="12">• Learns what "good fit" means</text>
+                    <text x="560" y="110" text-anchor="middle" font-size="12">• Adapts to different patterns</text>
+                    <text x="560" y="130" text-anchor="middle" font-size="12">• Trains 5x faster than standard loss</text>
+                </g>
+            </g>
+        
+            <!-- Arrow marker definition -->
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+                </marker>
+            </defs>
+        </svg>
+    </div>
+
+    <div class="slide" id="slide5">
+        <svg viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
+            <!-- Title -->
+            <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">Meta-Learning Approaches</text>
+        
+            <!-- Supervised Learning -->
+            <g transform="translate(50, 60)">
+                <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="5"/>
+                <text x="20" y="30" font-size="16" font-weight="bold">1. Supervised Learning</text>
+        
+                <!-- Process visualization -->
+                <g transform="translate(20, 45)">
+                    <!-- Model -->
+                    <rect x="0" y="0" width="160" height="50" fill="#4CAF50" opacity="0.8" rx="5"/>
+                    <text x="80" y="30" text-anchor="middle" fill="white" font-size="14">Model: f(x)</text>
+        
+                    <!-- Meta-Loss -->
+                    <rect x="240" y="0" width="160" height="50" fill="#2196F3" opacity="0.8" rx="5"/>
+                    <text x="320" y="30" text-anchor="middle" fill="white" font-size="14">Meta-Loss: M(f(x), y)</text>
+        
+                    <!-- Arrows -->
+                    <path d="M160,25 L240,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Example -->
+                    <text x="20" y="80" font-size="14" font-weight="bold">How it works:</text>
+                    <text x="20" y="100" font-size="12">• For classification: Compare predicted vs true labels</text>
+                    <text x="20" y="120" font-size="12">• For regression: Compare predicted vs target values</text>
+                    <text x="20" y="140" font-size="12">• Meta-loss learns optimal comparison metric</text>
+                </g>
+            </g>
+        
+            <!-- Model-based RL -->
+            <g transform="translate(50, 260)">
+                <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="5"/>
+                <text x="20" y="30" font-size="16" font-weight="bold">2. Model-based Reinforcement Learning</text>
+        
+                <!-- Process visualization -->
+                <g transform="translate(20, 45)">
+                    <!-- Policy -->
+                    <rect x="0" y="0" width="120" height="50" fill="#4CAF50" opacity="0.8" rx="5"/>
+                    <text x="60" y="30" text-anchor="middle" fill="white" font-size="14">Policy π</text>
+        
+                    <!-- Dynamics Model -->
+                    <rect x="160" y="0" width="120" height="50" fill="#FF9800" opacity="0.8" rx="5"/>
+                    <text x="220" y="30" text-anchor="middle" fill="white" font-size="14">Model P</text>
+        
+                    <!-- Meta-Loss -->
+                    <rect x="320" y="0" width="120" height="50" fill="#2196F3" opacity="0.8" rx="5"/>
+                    <text x="380" y="30" text-anchor="middle" fill="white" font-size="14">Meta-Loss</text>
+        
+                    <!-- Arrows -->
+                    <path d="M120,25 L160,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M280,25 L320,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+        
+                    <!-- Example -->
+                    <text x="20" y="80" font-size="14" font-weight="bold">How it works:</text>
+                    <text x="20" y="100" font-size="12">• Learn dynamics model from real system data</text>
+                    <text x="20" y="120" font-size="12">• Use model to train policy with meta-loss</text>
+                    <text x="20" y="140" font-size="12">• Meta-loss captures optimal policy update strategy</text>
+                </g>
+            </g>
+        
+            <!-- Model-free RL -->
+            <g transform="translate(50, 460)">
+                <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="5"/>
+                <text x="20" y="30" font-size="16" font-weight="bold">3. Model-free Reinforcement Learning</text>
+        
+                <!-- Process visualization -->
+                <g transform="translate(20, 45)">
+                    <!-- Policy -->
+                    <rect x="0" y="0" width="160" height="50" fill="#4CAF50" opacity="0.8" rx="5"/>
+                    <text x="80" y="30" text-anchor="middle" fill="white" font-size="14">Policy π</text>
+        
+                    <!-- Meta-Loss -->
+                    <rect x="240" y="0" width="160" height="50" fill="#2196F3" opacity="0.8" rx="5"/>
+                    <text x="320" y="20" text-anchor="middle" fill="white" font-size="14">Meta-Loss</text>
+                    <text x="320" y="40" text-anchor="middle" fill="white" font-size="12">Uses trajectory rewards</text>
+        
+                    <!-- Arrows -->
+                    <path d="M160,25 L240,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+        
+                    <!-- Example -->
+                    <text x="20" y="80" font-size="14" font-weight="bold">How it works:</text>
+                    <text x="20" y="100" font-size="12">• Policy generates trajectories with rewards</text>
+                    <text x="20" y="120" font-size="12">• Meta-loss learns from trajectory rewards</text>
+                    <text x="20" y="140" font-size="12">• No dynamics model needed</text>
+                </g>
+            </g>
+        
+            <!-- Arrow marker definition -->
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+                </marker>
+            </defs>
+        </svg>
+    </div>
+
+    <div class="slide" id="slide6">
+       <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+            <!-- Title -->
+            <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">Loss Shaping</text>
+            <text x="400" y="70" text-anchor="middle" font-size="16">Extra Information During Meta-Training</text>
+        
+            <!-- What is Loss Shaping -->
+            <g transform="translate(50, 100)">
+                <rect x="0" y="0" width="700" height="120" fill="#f8f9fa" rx="5"/>
+                <text x="20" y="30" font-size="16" font-weight="bold">How It Works</text>
+                
+                <!-- Before and After -->
+                <g transform="translate(20, 50)">
+                    <text x="0" y="0" font-size="14">Normal Training:</text>
+                    <text x="0" y="25" font-size="12">Meta-loss learns only from final outcome</text>
+                    <text x="0" y="45" font-size="12">(e.g., did model reach target or not)</text>
+            
+                    <text x="300" y="0" font-size="14">Loss Shaping:</text>
+                    <text x="300" y="25" font-size="12">Add helpful information during training</text>
+                    <text x="300" y="45" font-size="12">(e.g., intermediate goals, expert knowledge)</text>
+                </g>
+            </g>
+        
+            <!-- Examples -->
+            <g transform="translate(50, 220)">
+                <rect x="0" y="0" width="700" height="300" fill="#f8f9fa" rx="5"/>
+                <text x="20" y="30" font-size="16" font-weight="bold">Examples</text>
+        
+                <!-- MountainCar -->
+                <g transform="translate(20, 50)">
+                    <rect x="0" y="0" width="200" height="230" fill="white" stroke="#ddd" rx="5"/>
+                    <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">MountainCar</text>
+                    
+                    <!-- Car visualization -->
+                    <path d="M 20,100 Q 100,150 180,100" stroke="#333" fill="none" stroke-width="2"/>
+                    <circle cx="100" cy="95" r="5" fill="#FF9800"/>
+                    <text x="100" y="80" text-anchor="middle" font-size="10">car</text>
+                    
+                    <text x="100" y="180" text-anchor="middle" font-size="12">Add intermediate goals</text>
+                    <text x="100" y="200" text-anchor="middle" font-size="12">during training to</text>
+                    <text x="100" y="220" text-anchor="middle" font-size="12">encourage exploration</text>
+                </g>
+        
+                <!-- Robot Dynamics -->
+                <g transform="translate(240, 50)">
+                    <rect x="0" y="0" width="200" height="230" fill="white" stroke="#ddd" rx="5"/>
+                    <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">Robot Dynamics</text>
+                    
+                    <!-- Simple robot arm -->
+                    <line x1="80" y1="100" x2="120" y2="100" stroke="#333" stroke-width="4"/>
+                    <line x1="120" y1="100" x2="150" y2="80" stroke="#333" stroke-width="4"/>
+                    <circle cx="120" cy="100" r="3" fill="#FF9800"/>
+                    
+                    <text x="100" y="180" text-anchor="middle" font-size="12">Use physics model</text>
+                    <text x="100" y="200" text-anchor="middle" font-size="12">during training for</text>
+                    <text x="100" y="220" text-anchor="middle" font-size="12">better generalization</text>
+                </g>
+        
+                <!-- Expert Demos -->
+                <g transform="translate(460, 50)">
+                    <rect x="0" y="0" width="200" height="230" fill="white" stroke="#ddd" rx="5"/>
+                    <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">Expert Demos</text>
+                    
+                    <!-- Demo path visualization -->
+                    <path d="M 40,100 C 70,80 130,120 160,100" stroke="#4CAF50" fill="none" stroke-width="2"/>
+                    <path d="M 40,120 C 70,100 130,140 160,120" stroke="#2196F3" fill="none" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="50" y="90" font-size="10">expert</text>
+                    <text x="50" y="140" font-size="10">learned</text>
+                    
+                    <text x="100" y="180" text-anchor="middle" font-size="12">Include expert</text>
+                    <text x="100" y="200" text-anchor="middle" font-size="12">behavior during</text>
+                    <text x="100" y="220" text-anchor="middle" font-size="12">meta-training</text>
+                </g>
+            </g>
+        </svg>
+    </div>
+    
+    <div class="slide" id="slide7">
+        <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+            <!-- Title -->
+            <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">Applications</text>
+        
+            <!-- Applications Grid -->
+            <g transform="translate(50, 60)">
+                <!-- Supervised Learning Box -->
+                <rect x="0" y="0" width="340" height="220" fill="#f8f9fa" rx="5"/>
+                <text x="20" y="30" font-size="16" font-weight="bold">Supervised Learning</text>
+                
+                <!-- Classification -->
+                <rect x="20" y="45" width="300" height="70" fill="white" stroke="#ddd" rx="5"/>
+                <text x="40" y="70" font-size="14" font-weight="bold">MNIST Classification</text>
+                <text x="40" y="90" font-size="12">• Higher accuracy (88% vs 82%)</text>
+                <text x="40" y="105" font-size="12">• 30% fewer training samples needed</text>
+        
+                <!-- Regression -->
+                <rect x="20" y="130" width="300" height="70" fill="white" stroke="#ddd" rx="5"/>
+                <text x="40" y="155" font-size="14" font-weight="bold">Sine Regression</text>
+                <text x="40" y="175" font-size="12">• Better pattern recognition</text>
+                <text x="40" y="190" font-size="12">• Generalizes to unseen frequencies</text>
+        
+                <!-- Reinforcement Learning Box -->
+                <rect x="360" y="0" width="340" height="220" fill="#f8f9fa" rx="5"/>
+                <text x="380" y="30" font-size="16" font-weight="bold">Reinforcement Learning</text>
+        
+                <!-- Model-based RL -->
+                <rect x="380" y="45" width="300" height="70" fill="white" stroke="#ddd" rx="5"/>
+                <text x="400" y="70" font-size="14" font-weight="bold">Model-based RL</text>
+                <text x="400" y="90" font-size="12">• Reacher robot task</text>
+                <text x="400" y="105" font-size="12">• 5x faster goal reaching</text>
+        
+                <!-- Model-free RL -->
+                <rect x="380" y="130" width="300" height="70" fill="white" stroke="#ddd" rx="5"/>
+                <text x="400" y="155" font-size="14" font-weight="bold">Model-free RL</text>
+                <text x="400" y="175" font-size="12">• MuJoCo environments (Ant, Reacher)</text>
+                <text x="400" y="190" font-size="12">• 8x sample efficiency improvement</text>
+        
+                <!-- Loss Shaping Box -->
+                <rect x="0" y="240" width="700" height="220" fill="#f8f9fa" rx="5"/>
+                <text x="20" y="270" font-size="16" font-weight="bold">Loss Shaping Applications</text>
+        
+                <!-- MountainCar -->
+                <rect x="20" y="285" width="210" height="70" fill="white" stroke="#ddd" rx="5"/>
+                <text x="40" y="310" font-size="14" font-weight="bold">MountainCar</text>
+                <text x="40" y="330" font-size="12">Meta-loss learns exploration</text>
+                <text x="40" y="345" font-size="12">strategy during training</text>
+        
+                <!-- Robot Dynamics -->
+                <rect x="245" y="285" width="210" height="70" fill="white" stroke="#ddd" rx="5"/>
+                <text x="265" y="310" font-size="14" font-weight="bold">Robot Dynamics</text>
+                <text x="265" y="330" font-size="12">Uses physics priors during</text>
+                <text x="265" y="345" font-size="12">training for better learning</text>
+        
+                <!-- Expert Demos -->
+                <rect x="470" y="285" width="210" height="70" fill="white" stroke="#ddd" rx="5"/>
+                <text x="490" y="310" font-size="14" font-weight="bold">Expert Demonstrations</text>
+                <text x="490" y="330" font-size="12">Incorporates expert knowledge</text>
+                <text x="490" y="345" font-size="12">for faster policy learning</text>
+            </g>
+        </svg>
     </div>
 
     <div class="slide" id="slide8">
-        <h2>Future Directions</h2>
-        <div class="explanation-text">
-            Our research opens several promising avenues for future investigation in meta-learning and loss function
-            optimization. These directions emerge from both the successes and current limitations of our approach.
-        </div>
-
-        <div class="definitions-container">
-            <div class="definition-card">
-                <div class="definition-title">Technical Advancement Opportunities</div>
-                <div class="definition-text">
-                    The development of methods for black-box optimization models represents a significant opportunity for
-                    expanding our framework's applicability. We envision integrating causal knowledge into the meta-learning
-                    process to improve the interpretability and efficiency of learned loss functions. There's also potential
-                    in combining multiple meta-loss functions to handle increasingly complex and diverse task families.
-                </div>
-            </div>
-
-            <div class="definition-card">
-                <div class="definition-title">Application Extensions</div>
-                <div class="definition-text">
-                    Our framework shows promise for developing more sophisticated curiosity-based reward mechanisms in
-                    reinforcement learning. We anticipate creating enhanced exploration strategies that can efficiently
-                    navigate complex state spaces. The methodology can be extended to new task families, particularly in
-                    robotics and control systems where traditional loss functions often struggle to capture task complexity.
-                </div>
-            </div>
-
-            <div class="definition-card">
-                <div class="definition-title">Research Impact</div>
-                <div class="definition-text">
-                    This work establishes a foundation for automating the discovery of task-appropriate loss functions. The
-                    demonstrated ability to learn and shape loss landscapes opens new possibilities for improving
-                    optimization across machine learning domains. Our findings suggest that learned loss functions could
-                    become a standard tool in the machine learning toolkit, particularly for complex tasks where traditional
-                    loss functions are suboptimal.
-                </div>
-            </div>
-        </div>
-
-        <div class="explanation-text">
-            Our code and additional resources are available at the ML³ Project Page, enabling further research and
-            development in this promising direction. We encourage the research community to build upon these foundations and
-            explore new applications of meta-learned loss functions.
-        </div>
+        <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+            <!-- Title -->
+            <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">Future Directions</text>
+        
+            <!-- Three main areas -->
+            <g transform="translate(50, 80)">
+                <!-- Multi-task Learning -->
+                <rect x="0" y="0" width="220" height="160" fill="#f8f9fa" rx="5"/>
+                <text x="20" y="30" font-size="16" font-weight="bold">Multiple Loss Functions</text>
+                <g transform="translate(20, 50)">
+                    <rect x="0" y="0" width="180" height="90" fill="white" stroke="#ddd" rx="5"/>
+                    <text x="90" y="35" text-anchor="middle" font-size="12">Combine different</text>
+                    <text x="90" y="55" text-anchor="middle" font-size="12">meta-loss functions for</text>
+                    <text x="90" y="75" text-anchor="middle" font-size="12">complex task families</text>
+                </g>
+        
+                <!-- Exploration -->
+                <rect x="240" y="0" width="220" height="160" fill="#f8f9fa" rx="5"/>
+                <text x="260" y="30" font-size="16" font-weight="bold">Better Exploration</text>
+                <g transform="translate(260, 50)">
+                    <rect x="0" y="0" width="180" height="90" fill="white" stroke="#ddd" rx="5"/>
+                    <text x="90" y="35" text-anchor="middle" font-size="12">Develop curiosity rewards</text>
+                    <text x="90" y="55" text-anchor="middle" font-size="12">for more efficient</text>
+                    <text x="90" y="75" text-anchor="middle" font-size="12">exploration strategies</text>
+                </g>
+        
+                <!-- Applications -->
+                <rect x="480" y="0" width="220" height="160" fill="#f8f9fa" rx="5"/>
+                <text x="500" y="30" font-size="16" font-weight="bold">New Applications</text>
+                <g transform="translate(500, 50)">
+                    <rect x="0" y="0" width="180" height="90" fill="white" stroke="#ddd" rx="5"/>
+                    <text x="90" y="35" text-anchor="middle" font-size="12">Extend to more domains:</text>
+                    <text x="90" y="55" text-anchor="middle" font-size="12">robotics, computer vision,</text>
+                    <text x="90" y="75" text-anchor="middle" font-size="12">natural language</text>
+                </g>
+            </g>
+        
+            <!-- Code availability -->
+            <g transform="translate(50, 280)">
+                <rect x="0" y="0" width="700" height="60" fill="#f8f9fa" rx="5"/>
+                <text x="20" y="35" font-size="14">Code available at: sites.google.com/view/mlthree</text>
+            </g>
+        </svg>
     </div>
 
     <script>
