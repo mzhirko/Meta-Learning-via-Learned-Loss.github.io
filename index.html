@@ -5,197 +5,550 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meta-Learning via Learned Loss</title>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            scroll-behavior: smooth;
-        }
-        .slide {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 80px 20px 20px 20px;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        h1, h2 {
-            margin: 0 0 20px 0;
-            color: #333;
-        }
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #333;
-            padding: 10px 0;
-            z-index: 1000;
-        }
-        .nav-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            padding: 0 20px;
-        }
-        .nav-links a {
-            color: #fff;
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        .nav-links a:hover {
-            background-color: #4CAF50;
-        }
+    /* Base styles */
+    body, html {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        scroll-behavior: smooth;
+    }
+    
+    /* Slides */
+    .slide {
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 60px 15px 15px 15px;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        position: relative;
+    }
+    
+    /* Typography */
+    h1 {
+        font-size: 1.8rem;
+        margin: 0 0 15px 0;
+        color: #333;
+    }
+    
+    h2 {
+        font-size: 1.4rem;
+        margin: 0 0 15px 0;
+        color: #333;
+    }
+    
+    /* Navigation */
+    nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #333;
+        padding: 5px 0;
+        z-index: 1000;
+    }
+    
+    .nav-links {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 0 10px;
+        font-size: 0.9rem;
+    }
+    
+    .nav-links a {
+        color: #fff;
+        text-decoration: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+    }
+    
+    .nav-links a:hover {
+        background-color: #4CAF50;
+    }
+    
+    /* Definition cards */
+    .definitions-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+    
+    .definition-card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: left;
+        height: 100%;
+    }
+    
+    .definition-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+        font-size: 1.1em;
+    }
+    
+    .definition-text {
+        color: #666;
+        font-size: 0.95em;
+        line-height: 1.5;
+    }
+    
+    /* Dropdowns */
+    .papers-dropdown,
+    .image-dropdown {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto 20px auto;
+        text-align: center;
+        color: #4CAF50;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    
+    .papers-dropdown summary,
+    .image-dropdown summary {
+        cursor: pointer;
+        font-weight: 500;
+        padding: 8px 0;
+        outline: none;
+        user-select: none;
+        display: inline-block;
+    }
+    
+    .papers-dropdown summary::-webkit-details-marker,
+    .image-dropdown summary::-webkit-details-marker {
+        display: none;
+    }
+    
+    .papers-dropdown summary::after,
+    .image-dropdown summary::after {
+        content: " ►";
+        font-size: 0.8em;
+        vertical-align: middle;
+    }
+    
+    .papers-dropdown[open] summary::after,
+    .image-dropdown[open] summary::after {
+        content: " ▼";
+    }
+    
+    .papers-dropdown ul {
+        list-style: none;
+        padding: 10px 0;
+        margin: 0;
+        border-top: 1px solid #eee;
+    }
+    
+    .papers-dropdown li {
+        padding: 5px 0;
+        font-size: 0.9em;
+        color: #555;
+    }
+    
+    /* Images */
+    .learning-loss-image {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+        margin: 20px auto;
+        display: block;
+        transition: all 0.3s ease;
+    }
+    
+    .algorithm-image {
+        max-width: 500px;
+        width: 100%;
+        height: auto;
+        margin: 15px auto;
+        display: block;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Experiments Grid */
+    .experiments-grid {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .experiment-row {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .experiment-row.center {
+        justify-content: center;
+    }
+    
+    .experiment-cell {
+        flex: 1;
+        max-width: 500px;
+        text-align: center;
+    }
+    
+    .experiment-label {
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: 500;
+    }
+    
+    .experiment-image {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .sine-container {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    .sine-container .experiment-image {
+        width: 48%;
+    }
+    
+    /* Explanatory text */
+    .explanation-text {
+        max-width: 800px;
+        margin: 20px auto;
+        text-align: center;
+        line-height: 1.6;
+        color: #666;
+        padding: 0 20px;
+        font-size: 0.95em;
+    }
+    
+    /* SVG elements */
+    .slide svg {
+        max-width: 90%;
+        max-height: 70vh;
+        width: auto;
+        height: auto;
+    }
+    
+    .svg-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 10px;
+    }
+    
+    .slide svg text {
+        font-size: 12px;
+    }
+    
+    .slide svg text.title {
+        font-size: 18px;
+        font-weight: bold;
+    }
+    
+    .slide svg text.subtitle {
+        font-size: 14px;
+    }
+    
+    /* Media queries */
+    @media (max-width: 900px) {
         .definitions-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
+            grid-template-columns: repeat(2, 1fr);
         }
+    }
+    
+    @media (max-width: 768px) {
+        .slide {
+            padding-top: 50px;
+        }
+        
+        .nav-links {
+            font-size: 0.8rem;
+        }
+        
+        .slide svg {
+            max-height: 60vh;
+        }
+        
+        .slide svg text {
+            font-size: 10px;
+        }
+        
+        .slide svg text.title {
+            font-size: 16px;
+        }
+        
+        .slide svg text.subtitle {
+            font-size: 12px;
+        }
+        
+        .svg-container {
+            padding: 5px;
+        }
+    
+        .experiment-row {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .experiment-cell {
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .sine-container {
+            flex-direction: column;
+        }
+        
+        .sine-container .experiment-image {
+            width: 100%;
+        }
+    }
+    
+    @media (max-width: 600px) {
+        .definitions-container {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
         .definition-card {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            text-align: left;
-            transition: transform 0.3s ease;
+            padding: 15px;
         }
-        .definition-card:hover {
-            transform: translateY(-5px);
-        }
+        
         .definition-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-            font-size: 1.1em;
+            font-size: 1em;
         }
+        
         .definition-text {
-            color: #666;
-            font-size: 0.95em;
-            line-height: 1.5;
-        }
-        .formula-dropdown {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 20px 0;
-            transition: background-color 0.3s;
-        }
-        .formula-dropdown:hover {
-            background-color: #45a049;
-        }
-        .formula-content {
-            display: none;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-top: 10px;
-        }
-        .ml-model { background-color: #e6f7ff; }
-        .input-output { background-color: #fff0f5; }
-        .counterfactual { background-color: #f0fff0; }
-        .properties { background-color: #fff5e6; }
-        
-        svg {
-            max-width: 100%;
-            height: auto;
+            font-size: 0.9em;
         }
         
-        @media (max-width: 768px) {
-            .nav-links {
-                font-size: 0.9em;
-            }
-            .slide {
-                padding-top: 100px;
-            }
-            .definitions-container {
-                grid-template-columns: 1fr;
-            }
+        .papers-dropdown li {
+            font-size: 0.85em;
         }
-                .framework-diagram {
-            max-width: 800px;
-            width: 100%;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
+    }
+    
+    @media (max-height: 700px) {
+        .slide svg {
+            max-height: 50vh;
         }
-        
-        .results-graph {
-            max-width: 800px;
-            width: 100%;
-            height: 300px;
-            margin: 20px auto;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            position: relative;
+    }
+    .process-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .process-step {
+        background: #f8f9fa;
+        margin: 15px 0;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: left;
+    }
+    
+    .highlight {
+        background: linear-gradient(to right, #f8f9fa, #e3f2fd);
+        border-left: 4px solid #2196F3;
+    }
+    
+    .info-dropdown {
+        margin: 15px 0;
+    }
+    
+    .info-dropdown summary {
+        cursor: pointer;
+        color: #4CAF50;
+        font-weight: 500;
+        padding: 10px;
+        border-radius: 4px;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .info-dropdown summary:hover {
+        background: #f5f5f5;
+    }
+    
+    .step-list {
+        padding-left: 20px;
+        margin: 10px 0;
+    }
+    
+    .step-list li {
+        margin: 10px 0;
+        line-height: 1.5;
+    }
+    
+    .example-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .example {
+        background: white;
+        padding: 15px;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .example h4 {
+        margin: 0 0 10px 0;
+        color: #333;
+    }
+    
+    .example p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9em;
+    }
+    
+    /* Hide default details marker */
+    .info-dropdown summary::-webkit-details-marker {
+        display: none;
+    }
+    
+    /* Custom arrow indicators */
+    .info-dropdown summary::after {
+        content: " ►";
+        font-size: 0.8em;
+        vertical-align: middle;
+    }
+    
+    .info-dropdown[open] summary::after {
+        content: " ▼";
+    }
+    .process-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .process-step {
+        background: #f8f9fa;
+        margin: 15px 0;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: left;
+    }
+    
+    .highlight {
+        background: linear-gradient(to right, #f8f9fa, #e3f2fd);
+        border-left: 4px solid #2196F3;
+    }
+    
+    .comparison-box {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-top: 15px;
+    }
+    
+    .comparison-side {
+        background: white;
+        padding: 15px;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .comparison-side.active {
+        border-left: 4px solid #4CAF50;
+        background: linear-gradient(to right, white, #f1f8e9);
+    }
+    
+    .comparison-side h4 {
+        margin: 0 0 10px 0;
+        color: #333;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 5px;
+    }
+    
+    .step-content {
+        margin-bottom: 20px;
+    }
+    
+    .step-content h4 {
+        color: #2196F3;
+        margin: 0 0 10px 0;
+    }
+    
+    .step-list {
+        padding-left: 20px;
+        margin: 10px 0;
+    }
+    
+    .step-list li {
+        margin: 10px 0;
+        line-height: 1.5;
+    }
+    
+    .info-dropdown {
+        margin: 15px 0;
+    }
+    
+    .info-dropdown summary {
+        cursor: pointer;
+        color: #4CAF50;
+        font-weight: 500;
+        padding: 10px;
+        border-radius: 4px;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .info-dropdown summary:hover {
+        background: #f5f5f5;
+    }
+    
+    .info-dropdown summary::-webkit-details-marker {
+        display: none;
+    }
+    
+    .info-dropdown summary::after {
+        content: " ►";
+        font-size: 0.8em;
+        vertical-align: middle;
+    }
+    
+    .info-dropdown[open] summary::after {
+        content: " ▼";
+    }
+    
+    ul {
+        margin: 5px 0;
+        padding-left: 20px;
+    }
+    
+    li {
+        margin: 5px 0;
+    }
+    
+    @media (max-width: 768px) {
+        .comparison-box {
+            grid-template-columns: 1fr;
         }
-        
-        .graph-line {
-            stroke-width: 3;
-            fill: none;
-        }
-        
-        .graph-line.meta {
-            stroke: #4CAF50;
-        }
-        
-        .graph-line.standard {
-            stroke: #2196F3;
-        }
-        
-        .evaluation-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-        
-        .evaluation-card {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            text-align: left;
-        }
-        
-        .formula-section {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px auto;
-            max-width: 800px;
-        }
-        .explanation-text {
-            max-width: 800px;
-            margin: 20px auto;
-            text-align: left;
-            line-height: 1.6;
-            color: #333;
-            padding: 0 20px;
-        }
-        .formula-explanation {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px auto;
-            max-width: 800px;
-        }
+    }
     </style>
 </head>
 <body>
@@ -203,12 +556,11 @@
         <div class="nav-links">
             <a href="#slide1">Motivation</a>
             <a href="#slide2">Related Work</a>
-            <a href="#slide3">Meta-Loss Network Process</a>
-            <a href="#slide4">Core Concept</a>
-            <a href="#slide5">Meta-Learning Approaches</a>
-            <a href="#slide6">Loss Shaping</a>
-            <a href="#slide7">Applications</a>
-            <a href="#slide8">Future Directions</a>
+            <a href="#slide3">Process</a>
+            <a href="#slide4">Approaches</a>
+            <a href="#slide5">Loss Shaping</a>
+            <a href="#slide6">Applications</a>
+            <a href="#slide7">Future</a>
         </div>
     </nav>
 
@@ -255,11 +607,13 @@
                 <div class="definition-title">Learning Model Parameters</div>
                 <div class="definition-text">
                     Traditional meta-learning focuses on finding model parameters that adapt quickly to new tasks. 
-                    <br><strong>References:</strong> 
-                    <ul>
-                        <li>Finn et al., Model-Agnostic Meta-Learning (MAML)</li>
-                        <li>Schmidhuber, "Evolutionary Principles in Self-Referential Learning" (1987)</li>
-                    </ul>
+                    <details class="papers-dropdown">
+                        <summary>View Papers →</summary>
+                        <ul>
+                            <li>Finn et al., Model-Agnostic Meta-Learning (MAML)</li>
+                            <li>Schmidhuber, "Evolutionary Principles in Self-Referential Learning" (1987)</li>
+                        </ul>
+                    </details>
                 </div>
             </div>
     
@@ -267,11 +621,13 @@
                 <div class="definition-title">Learning Optimizers</div>
                 <div class="definition-text">
                     Some approaches learn how to update parameters using known loss functions.
-                    <br><strong>References:</strong> 
-                    <ul>
-                        <li>Andrychowicz et al., "Learning to Learn by Gradient Descent by Gradient Descent" (2016)</li>
-                        <li>Franceschi et al., "Forward and Reverse Gradient-Based Hyperparameter Optimization" (2017)</li>
-                    </ul>
+                    <details class="papers-dropdown">
+                        <summary>View Papers →</summary>
+                        <ul>
+                            <li>Andrychowicz et al., "Learning to Learn by Gradient Descent by Gradient Descent" (2016)</li>
+                            <li>Franceschi et al., "Forward and Reverse Gradient-Based Hyperparameter Optimization" (2017)</li>
+                        </ul>
+                    </details>
                 </div>
             </div>
     
@@ -279,11 +635,13 @@
                 <div class="definition-title">Learning Loss Functions</div>
                 <div class="definition-text">
                     A new approach that learns the loss function itself, making it independent of specific models or tasks.
-                    <br><strong>References:</strong> 
-                    <ul>
-                        <li>Sung et al., "Meta-Critic Networks for Sample Efficient Learning" (2017)</li>
-                        <li>Houthooft et al., "Evolved Policy Gradients" (2018)</li>
-                    </ul>
+                    <details class="papers-dropdown">
+                        <summary>View Papers →</summary>
+                        <ul>
+                            <li>Sung et al., "Meta-Critic Networks for Sample Efficient Learning" (2017)</li>
+                            <li>Houthooft et al., "Evolved Policy Gradients" (2018)</li>
+                        </ul>
+                    </details>
                 </div>
             </div>
         </div>
@@ -296,6 +654,13 @@
     
     
     <div class="slide" id="slide3">
+        <div class="image-dropdown">
+            <details>
+                <summary>View Learning Loss Formula →</summary>
+                <img src="/learning-loss.png" alt="Learning Loss Formula" class="learning-loss-image">
+            </details>
+        </div>
+    
         <svg viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
             <!-- Title -->
             <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">How Meta-Loss Network Learns</text>
@@ -316,7 +681,7 @@
                     <path d="M140,65 L200,65" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
                     
                     <text x="390" y="60" font-size="14">Example: Model predicts 0.8, target is 1.0</text>
-                    <text x="370" y="80" font-size="10">Meta-loss network, like standard loss, needs prediction and target</text>
+                    <text x="340" y="80" font-size="10">Meta-loss network, like standard loss, needs prediction and target</text>
                 </g>
         
                 <!-- Step 2: Meta-Loss Evaluation -->
@@ -343,6 +708,7 @@
                     <text x="190" y="90" text-anchor="middle" fill="white" font-size="12">1. Model makes prediction</text>
                     <text x="190" y="110" text-anchor="middle" fill="white" font-size="12">2. Meta-loss provides loss value</text>
                     <text x="190" y="130" text-anchor="middle" fill="white" font-size="12">3. Model updates to minimize this loss</text>
+                    
                     <!-- Outer Loop -->
                     <rect x="380" y="45" width="300" height="100" fill="#2196F3" opacity="0.8" rx="5"/>
                     <text x="530" y="70" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Outer Loop: Training Meta-Loss</text>
@@ -350,31 +716,18 @@
                     <text x="530" y="110" text-anchor="middle" fill="white" font-size="12">2. Update meta-loss parameters to minimize MSE</text>
                 </g>
         
-                <!-- Example Results -->
+                <!-- Step 4 -->
                 <g transform="translate(0, 440)">
                     <rect x="0" y="0" width="700" height="160" fill="#f8f9fa" rx="5"/>
                     <text x="20" y="30" font-size="16" font-weight="bold">4. Practical Example: Sine Curve Fitting</text>
                     
-                    <!-- Before Training -->
-                    <rect x="40" y="45" width="180" height="100" fill="white" stroke="#ddd" rx="5"/>
-                    <text x="130" y="65" text-anchor="middle" font-size="14" font-weight="bold">Before</text>
-                    <path d="M 50,95 L 200,95" 
-                          stroke="#FF9800" fill="none" stroke-width="2"/>
-                    <text x="130" y="135" text-anchor="middle" font-size="12">Poor fit</text>
-                    
-                    <!-- After Training -->
-                    <rect x="240" y="45" width="180" height="100" fill="white" stroke="#ddd" rx="5"/>
-                    <text x="330" y="65" text-anchor="middle" font-size="14" font-weight="bold">After</text>
-                    <path d="M 250,95 Q 287.5,75 325,95 Q 362.5,115 400,95" 
-                          stroke="#4CAF50" fill="none" stroke-width="2"/>
-                    <text x="330" y="135" text-anchor="middle" font-size="12">Better fit</text>
-                    
-                    <!-- Key Benefits -->
-                    <rect x="440" y="45" width="240" height="100" fill="white" stroke="#ddd" rx="5"/>
-                    <text x="560" y="65" text-anchor="middle" font-size="14" font-weight="bold">Learned Benefits</text>
-                    <text x="560" y="90" text-anchor="middle" font-size="12">• Learns what "good fit" means</text>
-                    <text x="560" y="110" text-anchor="middle" font-size="12">• Adapts to different patterns</text>
-                    <text x="560" y="130" text-anchor="middle" font-size="12">• Trains 5x faster than standard loss</text>
+                    <!-- Using image instead of drawing -->
+                    <foreignObject x="40" y="45" width="600" height="100">
+                        <div xmlns="http://www.w3.org/1999/xhtml">
+                            <img src="/sine-fitting.png" alt="Sine Curve Fitting Results" 
+                                 style="max-width: 400px; height: auto; display: block; margin: 0 auto;"/>
+                        </div>
+                    </foreignObject>
                 </g>
             </g>
         
@@ -408,7 +761,6 @@
                 <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="5"/>
                 <text x="20" y="30" font-size="16" font-weight="bold">1. Supervised Learning</text>
         
-                <!-- Process visualization -->
                 <g transform="translate(20, 45)">
                     <!-- Model -->
                     <rect x="0" y="0" width="160" height="50" fill="#4CAF50" opacity="0.8" rx="5"/>
@@ -422,10 +774,17 @@
                     <path d="M160,25 L240,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
                     
                     <!-- Example -->
-                    <text x="20" y="80" font-size="14" font-weight="bold">How it works:</text>
-                    <text x="20" y="100" font-size="12">• For classification: Compare predicted vs true labels</text>
-                    <text x="20" y="120" font-size="12">• For regression: Compare predicted vs target values</text>
-                    <text x="20" y="140" font-size="12">• Meta-loss learns optimal comparison metric</text>
+                    <text x="20" y="80" font-size="12">• For classification: Compare predicted vs true labels</text>
+                    <text x="20" y="100" font-size="12">• For regression: Compare predicted vs target values</text>
+                    <text x="20" y="120" font-size="12">• Meta-loss learns optimal comparison metric</text>
+    
+                    <!-- Algorithm Dropdown using foreignObject -->
+                    <foreignObject x="450" y="70" width="200" height="100">
+                        <details xmlns="http://www.w3.org/1999/xhtml" class="image-dropdown">
+                            <summary>View Algorithm →</summary>
+                            <img src="/supervised-algorithm.png" alt="Supervised Learning Algorithm" class="algorithm-image">
+                        </details>
+                    </foreignObject>
                 </g>
             </g>
         
@@ -434,7 +793,6 @@
                 <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="5"/>
                 <text x="20" y="30" font-size="16" font-weight="bold">2. Model-based Reinforcement Learning</text>
         
-                <!-- Process visualization -->
                 <g transform="translate(20, 45)">
                     <!-- Policy -->
                     <rect x="0" y="0" width="120" height="50" fill="#4CAF50" opacity="0.8" rx="5"/>
@@ -453,10 +811,17 @@
                     <path d="M280,25 L320,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
         
                     <!-- Example -->
-                    <text x="20" y="80" font-size="14" font-weight="bold">How it works:</text>
-                    <text x="20" y="100" font-size="12">• Learn dynamics model from real system data</text>
-                    <text x="20" y="120" font-size="12">• Use model to train policy with meta-loss</text>
-                    <text x="20" y="140" font-size="12">• Meta-loss captures optimal policy update strategy</text>
+                    <text x="20" y="80" font-size="12">• Learn dynamics model from real system data</text>
+                    <text x="20" y="100" font-size="12">• Use model to train policy with meta-loss</text>
+                    <text x="20" y="120" font-size="12">• Meta-loss captures optimal policy update strategy</text>
+    
+                    <!-- Algorithm Dropdown using foreignObject -->
+                    <foreignObject x="450" y="70" width="200" height="100">
+                        <details xmlns="http://www.w3.org/1999/xhtml" class="image-dropdown">
+                            <summary>View Algorithm →</summary>
+                            <img src="/reinforcement-algorithm.png" alt="Reinforcement Learning Algorithm" class="algorithm-image">
+                        </details>
+                    </foreignObject>
                 </g>
             </g>
         
@@ -465,7 +830,6 @@
                 <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="5"/>
                 <text x="20" y="30" font-size="16" font-weight="bold">3. Model-free Reinforcement Learning</text>
         
-                <!-- Process visualization -->
                 <g transform="translate(20, 45)">
                     <!-- Policy -->
                     <rect x="0" y="0" width="160" height="50" fill="#4CAF50" opacity="0.8" rx="5"/>
@@ -480,10 +844,9 @@
                     <path d="M160,25 L240,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
         
                     <!-- Example -->
-                    <text x="20" y="80" font-size="14" font-weight="bold">How it works:</text>
-                    <text x="20" y="100" font-size="12">• Policy generates trajectories with rewards</text>
-                    <text x="20" y="120" font-size="12">• Meta-loss learns from trajectory rewards</text>
-                    <text x="20" y="140" font-size="12">• No dynamics model needed</text>
+                    <text x="20" y="80" font-size="12">• Policy generates trajectories with rewards</text>
+                    <text x="20" y="100" font-size="12">• Meta-loss learns from trajectory rewards</text>
+                    <text x="20" y="120" font-size="12">• No dynamics model needed</text>
                 </g>
             </g>
         
@@ -497,119 +860,108 @@
     </div>
 
     <div class="slide" id="slide6">
-       <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-            <!-- Title -->
-            <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">Loss Shaping</text>
-            <text x="400" y="70" text-anchor="middle" font-size="16">Extra Information During Meta-Training</text>
-        
-            <!-- What is Loss Shaping -->
-            <g transform="translate(50, 100)">
-                <rect x="0" y="0" width="700" height="120" fill="#f8f9fa" rx="5"/>
-                <text x="20" y="30" font-size="16" font-weight="bold">How It Works</text>
-                
-                <!-- Before and After -->
-                <g transform="translate(20, 50)">
-                    <text x="0" y="0" font-size="14">Normal Training:</text>
-                    <text x="0" y="25" font-size="12">Meta-loss learns only from final outcome</text>
-                    <text x="0" y="45" font-size="12">(e.g., did model reach target or not)</text>
-            
-                    <text x="300" y="0" font-size="14">Loss Shaping:</text>
-                    <text x="300" y="25" font-size="12">Add helpful information during training</text>
-                    <text x="300" y="45" font-size="12">(e.g., intermediate goals, expert knowledge)</text>
-                </g>
-            </g>
-        
-            <!-- Examples -->
-            <g transform="translate(50, 220)">
-                <rect x="0" y="0" width="700" height="300" fill="#f8f9fa" rx="5"/>
-                <text x="20" y="30" font-size="16" font-weight="bold">Examples</text>
-        
-                <!-- MountainCar -->
-                <g transform="translate(20, 50)">
-                    <rect x="0" y="0" width="200" height="230" fill="white" stroke="#ddd" rx="5"/>
-                    <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">MountainCar</text>
-                    
-                    <!-- Car visualization -->
-                    <path d="M 20,100 Q 100,150 180,100" stroke="#333" fill="none" stroke-width="2"/>
-                    <circle cx="100" cy="95" r="5" fill="#FF9800"/>
-                    <text x="100" y="80" text-anchor="middle" font-size="10">car</text>
-                    
-                    <text x="100" y="180" text-anchor="middle" font-size="12">Add intermediate goals</text>
-                    <text x="100" y="200" text-anchor="middle" font-size="12">during training to</text>
-                    <text x="100" y="220" text-anchor="middle" font-size="12">encourage exploration</text>
-                </g>
-        
-                <!-- Robot Dynamics -->
-                <g transform="translate(240, 50)">
-                    <rect x="0" y="0" width="200" height="230" fill="white" stroke="#ddd" rx="5"/>
-                    <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">Robot Dynamics</text>
-                    
-                    <!-- Simple robot arm -->
-                    <line x1="80" y1="100" x2="120" y2="100" stroke="#333" stroke-width="4"/>
-                    <line x1="120" y1="100" x2="150" y2="80" stroke="#333" stroke-width="4"/>
-                    <circle cx="120" cy="100" r="3" fill="#FF9800"/>
-                    
-                    <text x="100" y="180" text-anchor="middle" font-size="12">Use physics model</text>
-                    <text x="100" y="200" text-anchor="middle" font-size="12">during training for</text>
-                    <text x="100" y="220" text-anchor="middle" font-size="12">better generalization</text>
-                </g>
-        
-                <!-- Expert Demos -->
-                <g transform="translate(460, 50)">
-                    <rect x="0" y="0" width="200" height="230" fill="white" stroke="#ddd" rx="5"/>
-                    <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold">Expert Demos</text>
-                    
-                    <!-- Demo path visualization -->
-                    <path d="M 40,100 C 70,80 130,120 160,100" stroke="#4CAF50" fill="none" stroke-width="2"/>
-                    <path d="M 40,120 C 70,100 130,140 160,120" stroke="#2196F3" fill="none" stroke-width="2" stroke-dasharray="4"/>
-                    <text x="50" y="90" font-size="10">expert</text>
-                    <text x="50" y="140" font-size="10">learned</text>
-                    
-                    <text x="100" y="180" text-anchor="middle" font-size="12">Include expert</text>
-                    <text x="100" y="200" text-anchor="middle" font-size="12">behavior during</text>
-                    <text x="100" y="220" text-anchor="middle" font-size="12">meta-training</text>
-                </g>
-            </g>
-        </svg>
+        <h2>Loss Shaping</h2>
+    
+        <div class="process-container">
+            <!-- Key Distinction -->
+            <div class="process-step highlight">
+                <h3>Key Distinction</h3>
+                <div class="comparison-box">
+                    <div class="comparison-side">
+                        <h4>Basic Loss Learning</h4>
+                        <div class="content">
+                            Meta-loss network uses only:
+                            <ul>
+                                <li>Model predictions</li>
+                                <li>Target values</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="comparison-side active">
+                        <h4>Loss Shaping</h4>
+                        <div class="content">
+                            Additionally incorporates:
+                            <ul>
+                                <li>Domain knowledge</li>
+                                <li>Intermediate goals</li>
+                                <li>Expert information</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Technical Details -->
+            <details class="info-dropdown">
+                <summary>Technical Implementation →</summary>
+                <div class="process-step">
+                    <div class="step-content">
+                        <h4>Step 1: Input Processing</h4>
+                        <p>Feed task-specific information into meta-loss network:</p>
+                        <ul>
+                            <li>Ground truth parameters</li>
+                            <li>Expert demonstrations</li>
+                            <li>Intermediate objectives</li>
+                        </ul>
+                    </div>
+                    <div class="step-content">
+                        <h4>Step 2: Network Function</h4>
+                        <p>Meta-loss network learns to create optimization-friendly loss landscapes</p>
+                    </div>
+                </div>
+            </details>
+    
+            <!-- Training Process -->
+            <details class="info-dropdown">
+                <summary>Training Process →</summary>
+                <div class="process-step">
+                    <ol class="step-list">
+                        <li>Update model using gradients from meta-loss network</li>
+                        <li>Compare new model outputs with targets</li>
+                        <li>Update meta-loss network based on model improvement</li>
+                    </ol>
+                </div>
+            </details>
+        </div>
     </div>
     
     <div class="slide" id="slide7">
-        <h2>Experiments & Applications</h2>
+        <h2>Experiments</h2>
     
-        <!-- Shaping Loss Landscape -->
-        <h3>Shaping Loss Landscape</h3>
-        <div class="definitions-container">
-            <div class="definition-card">
-                <div class="definition-title">ML3 Loss Landscape</div>
-                <img src="https://lh5.googleusercontent.com/IooZR4aM0ypz3Uwen-eTXLXXpDUH0-1SgmZB_H01uV9ej5OfmN0F3ZeK1sJ2iGZqJQmt2RjrNMxz9OcCuf7z1w=w1280" alt="ML3 Loss Landscape" style="width:48%; height:auto; display:inline-block;">
+        <div class="experiments-grid">
+            <!-- Mountain Car -->
+            <div class="experiment-row">
+                <div class="experiment-cell">
+                    <p class="experiment-label">Mountain Car Policy</p>
+                    <img src="/mc_mse.gif" alt="Mountain Car MSE" class="experiment-image">
+                </div>
+                <div class="experiment-cell">
+                    <p class="experiment-label">Shaped ML3 Mountain Car</p>
+                    <img src="/shaped_ml3_mc.gif" alt="Shaped ML3 Mountain Car" class="experiment-image">
+                </div>
             </div>
-        </div>
     
-        <!-- Mountain Car -->
-        <h3>Mountain Car</h3>
-        <div class="definitions-container">
-            <div class="definition-card">
-                <div class="definition-title">ML3 Loss</div>
-                <img src="https://lh6.googleusercontent.com/7YFqMNFTTut9a77vY5g1vIZl9-9lQWYBNsGU6f1A5RAgzcmYCjgbmf6irKH0OEsxWjwO8bnhpWhOeORXzGpS1Dw=w1280" alt="Mountain Car ML3 Loss" style="width:48%; height:auto; display:inline-block;">
+            <!-- Sine Fitting -->
+            <div class="experiment-row center">
+                <div class="experiment-cell">
+                    <p class="experiment-label">Sine Curve Fitting</p>
+                    <div class="sine-container">
+                        <img src="/sine-fitting.png" alt="Sine Fitting" class="experiment-image">
+                        <img src="/sine-for-experiments.png" alt="Sine Experiments" class="experiment-image">
+                    </div>
+                </div>
             </div>
-        </div>
     
-    
-        <!-- Sine Regression -->
-        <h3>Sine Regression</h3>
-        <div class="definitions-container">
-            <div class="definition-card">
-                <div class="definition-title">Sine Regression</div>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_LlbwTEfnrlyJLQCoesYiF3TDxuVCKA64zQ&s" alt="Sine Regression" style="width:48%; height:auto; display:inline-block;">
-            </div>
-        </div>
-    
-        <!-- MNIST Classification -->
-        <h3>MNIST Classification</h3>
-        <div class="definitions-container">
-            <div class="definition-card">
-                <div class="definition-title">MNIST Classification</div>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpCdj9O3TkB3rQR9cjw9kRhkBf0ludGeZsUWv5VIIRCBkNanCeps_C02zFKIUCbyO5fCo&usqp=CAU" alt="MNIST Classification" style="width:48%; height:auto; display:inline-block;">
+            <!-- MNIST and Reacher -->
+            <div class="experiment-row">
+                <div class="experiment-cell">
+                    <p class="experiment-label">MNIST Classification</p>
+                    <img src="/mnist-classification-experiments.png" alt="MNIST Classification" class="experiment-image">
+                </div>
+                <div class="experiment-cell">
+                    <p class="experiment-label">Reacher Robot</p>
+                    <img src="/reacher-robot.gif" alt="Reacher Robot" class="experiment-image">
+                </div>
             </div>
         </div>
     </div>
