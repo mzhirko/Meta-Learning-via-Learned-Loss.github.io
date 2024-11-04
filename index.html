@@ -561,6 +561,7 @@
             <a href="#slide5">Loss Shaping</a>
             <a href="#slide6">Applications</a>
             <a href="#slide7">Future</a>
+            <a href="#slide8">Video</a>
         </div>
     </nav>
 
@@ -651,215 +652,189 @@
         </div>
     </div>
 
-    
-    
+        
+        
     <div class="slide" id="slide3">
-        <div class="image-dropdown">
-            <details>
-                <summary>View Learning Loss Formula →</summary>
-                <img src="learning-loss.png" alt="Learning Loss Formula" class="learning-loss-image">
-            </details>
+        <h2>Process</h2>
+        <div class="svg-container">
+            <svg viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
+                <!-- Title -->
+                <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">How Meta-Loss Network Learns</text>
+            
+                <!-- Step-by-Step Process -->
+                <g transform="translate(50, 60)">
+                    <!-- Step 1: Starting Point -->
+                    <g transform="translate(0, 0)">
+                        <rect x="0" y="0" width="700" height="100" fill="#f8f9fa" rx="5"/>
+                        <text x="20" y="30" font-size="16" font-weight="bold">1. Starting Point</text>
+                        
+                        <rect x="20" y="45" width="120" height="40" fill="#4CAF50" opacity="0.8" rx="5"/>
+                        <text x="80" y="70" text-anchor="middle" fill="white" font-size="12">Model Output</text>
+                        
+                        <rect x="200" y="45" width="120" height="40" fill="#2196F3" opacity="0.8" rx="5"/>
+                        <text x="260" y="70" text-anchor="middle" fill="white" font-size="12">Target Value</text>
+                        
+                        <path d="M140,65 L200,65" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <text x="390" y="60" font-size="14">Example: Model predicts 0.8, target is 1.0</text>
+                        <text x="340" y="80" font-size="10">Meta-loss network, like standard loss, needs prediction and target</text>
+                    </g>
+            
+                    <!-- Step 2: Meta-Loss Evaluation -->
+                    <g transform="translate(0, 120)">
+                        <rect x="0" y="0" width="700" height="120" fill="#f8f9fa" rx="5"/>
+                        <text x="20" y="30" font-size="16" font-weight="bold">2. Meta-Loss Network Process</text>
+                        
+                        <rect x="20" y="45" width="200" height="60" fill="#FF9800" opacity="0.8" rx="5"/>
+                        <text x="120" y="65" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Meta-Loss Network</text>
+                        <text x="120" y="85" text-anchor="middle" fill="white" font-size="12">Learns optimal error measure</text>
+                        
+                        <text x="300" y="75" font-size="14">Instead of using fixed formula (like MSE),</text>
+                        <text x="300" y="95" font-size="14">meta-loss updates its parameters based on model's progress</text>
+                    </g>
+            
+                    <!-- Step 3: Double Loop -->
+                    <g transform="translate(0, 260)">
+                        <rect x="0" y="0" width="700" height="160" fill="#f8f9fa" rx="5"/>
+                        <text x="20" y="30" font-size="16" font-weight="bold">3. Double Learning Loop</text>
+                        
+                        <!-- Inner Loop -->
+                        <rect x="40" y="45" width="300" height="100" fill="#4CAF50" opacity="0.8" rx="5"/>
+                        <text x="190" y="70" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Inner Loop: Regular Training</text>
+                        <text x="190" y="90" text-anchor="middle" fill="white" font-size="12">1. Model makes prediction</text>
+                        <text x="190" y="110" text-anchor="middle" fill="white" font-size="12">2. Meta-loss provides loss value</text>
+                        <text x="190" y="130" text-anchor="middle" fill="white" font-size="12">3. Model updates to minimize this loss</text>
+                        
+                        <!-- Outer Loop -->
+                        <rect x="380" y="45" width="300" height="100" fill="#2196F3" opacity="0.8" rx="5"/>
+                        <text x="530" y="70" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Outer Loop: Training Meta-Loss</text>
+                        <text x="530" y="90" text-anchor="middle" fill="white" font-size="12">1. Check with MSE if model improved</text>
+                        <text x="530" y="110" text-anchor="middle" fill="white" font-size="12">2. Update meta-loss parameters to minimize MSE</text>
+                    </g>
+                </g>
+            
+                <!-- Arrow marker definition -->
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+                    </marker>
+                </defs>
+            </svg>
+            <!-- Add the sine fitting image below the SVG -->
+            <img src="sine-fitting.png" alt="Sine Curve Fitting Results" class="experiment-image" style="max-width: 600px; margin-top: 20px;">
         </div>
-    
-        <svg viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
-            <!-- Title -->
-            <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">How Meta-Loss Network Learns</text>
-        
-            <!-- Step-by-Step Process -->
-            <g transform="translate(50, 60)">
-                <!-- Step 1: Starting Point -->
-                <g transform="translate(0, 0)">
-                    <rect x="0" y="0" width="700" height="100" fill="#f8f9fa" rx="5"/>
-                    <text x="20" y="30" font-size="16" font-weight="bold">1. Starting Point</text>
-                    
-                    <rect x="20" y="45" width="120" height="40" fill="#4CAF50" opacity="0.8" rx="5"/>
-                    <text x="80" y="70" text-anchor="middle" fill="white" font-size="12">Model Output</text>
-                    
-                    <rect x="200" y="45" width="120" height="40" fill="#2196F3" opacity="0.8" rx="5"/>
-                    <text x="260" y="70" text-anchor="middle" fill="white" font-size="12">Target Value</text>
-                    
-                    <path d="M140,65 L200,65" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
-                    
-                    <text x="390" y="60" font-size="14">Example: Model predicts 0.8, target is 1.0</text>
-                    <text x="340" y="80" font-size="10">Meta-loss network, like standard loss, needs prediction and target</text>
-                </g>
-        
-                <!-- Step 2: Meta-Loss Evaluation -->
-                <g transform="translate(0, 120)">
-                    <rect x="0" y="0" width="700" height="120" fill="#f8f9fa" rx="5"/>
-                    <text x="20" y="30" font-size="16" font-weight="bold">2. Meta-Loss Network Process</text>
-                    
-                    <rect x="20" y="45" width="200" height="60" fill="#FF9800" opacity="0.8" rx="5"/>
-                    <text x="120" y="65" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Meta-Loss Network</text>
-                    <text x="120" y="85" text-anchor="middle" fill="white" font-size="12">Learns optimal error measure</text>
-                    
-                    <text x="300" y="75" font-size="14">Instead of using fixed formula (like MSE),</text>
-                    <text x="300" y="95" font-size="14">meta-loss updates its parameters based on model's progress</text>
-                </g>
-        
-                <!-- Step 3: Double Loop -->
-                <g transform="translate(0, 260)">
-                    <rect x="0" y="0" width="700" height="160" fill="#f8f9fa" rx="5"/>
-                    <text x="20" y="30" font-size="16" font-weight="bold">3. Double Learning Loop</text>
-                    
-                    <!-- Inner Loop -->
-                    <rect x="40" y="45" width="300" height="100" fill="#4CAF50" opacity="0.8" rx="5"/>
-                    <text x="190" y="70" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Inner Loop: Regular Training</text>
-                    <text x="190" y="90" text-anchor="middle" fill="white" font-size="12">1. Model makes prediction</text>
-                    <text x="190" y="110" text-anchor="middle" fill="white" font-size="12">2. Meta-loss provides loss value</text>
-                    <text x="190" y="130" text-anchor="middle" fill="white" font-size="12">3. Model updates to minimize this loss</text>
-                    
-                    <!-- Outer Loop -->
-                    <rect x="380" y="45" width="300" height="100" fill="#2196F3" opacity="0.8" rx="5"/>
-                    <text x="530" y="70" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Outer Loop: Training Meta-Loss</text>
-                    <text x="530" y="90" text-anchor="middle" fill="white" font-size="12">1. Check with MSE if model improved</text>
-                    <text x="530" y="110" text-anchor="middle" fill="white" font-size="12">2. Update meta-loss parameters to minimize MSE</text>
-                </g>
-        
-                <!-- Step 4 -->
-                <g transform="translate(0, 440)">
-                    <rect x="0" y="0" width="700" height="160" fill="#f8f9fa" rx="5"/>
-                    <text x="20" y="30" font-size="16" font-weight="bold">4. Practical Example: Sine Curve Fitting</text>
-                    
-                    <!-- Using image instead of drawing -->
-                    <foreignObject x="40" y="45" width="600" height="100">
-                        <div xmlns="http://www.w3.org/1999/xhtml">
-                            <img src="sine-fitting.png" alt="Sine Curve Fitting Results" 
-                                 style="max-width: 400px; height: auto; display: block; margin: 0 auto;"/>
-                        </div>
-                    </foreignObject>
-                </g>
-            </g>
-        
-            <!-- Arrow marker definition -->
-            <defs>
-                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                    <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
-                </marker>
-            </defs>
-        </svg>
     </div>
 
     <div class="slide" id="slide4">
-        <h2>Core Concept</h2>
-        <div class="explanation-text">
-            The core concept of this research involves using a meta-loss network to learn adaptable loss functions across tasks and architectures.
-        </div>
-        <div class="video-container">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/QmePrknJh1g" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <h2>Approaches</h2>
+        <div class="svg-container">
+            <svg viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
+                <!-- Title -->
+                <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">Meta-Learning Approaches</text>
+            
+                <!-- Supervised Learning -->
+                <g transform="translate(50, 60)">
+                    <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="5"/>
+                    <text x="20" y="30" font-size="16" font-weight="bold">1. Supervised Learning</text>
+            
+                    <g transform="translate(20, 45)">
+                        <!-- Model -->
+                        <rect x="0" y="0" width="160" height="50" fill="#4CAF50" opacity="0.8" rx="5"/>
+                        <text x="80" y="30" text-anchor="middle" fill="white" font-size="14">Model: f(x)</text>
+            
+                        <!-- Meta-Loss -->
+                        <rect x="240" y="0" width="160" height="50" fill="#2196F3" opacity="0.8" rx="5"/>
+                        <text x="320" y="30" text-anchor="middle" fill="white" font-size="14">Meta-Loss: M(f(x), y)</text>
+            
+                        <!-- Arrows -->
+                        <path d="M160,25 L240,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Example -->
+                        <text x="20" y="80" font-size="12">• For classification: Compare predicted vs true labels</text>
+                        <text x="20" y="100" font-size="12">• For regression: Compare predicted vs target values</text>
+                        <text x="20" y="120" font-size="12">• Meta-loss learns optimal comparison metric</text>
+                    </g>
+                </g>
+            
+                <!-- Model-based RL -->
+                <g transform="translate(50, 260)">
+                    <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="5"/>
+                    <text x="20" y="30" font-size="16" font-weight="bold">2. Model-based Reinforcement Learning</text>
+            
+                    <g transform="translate(20, 45)">
+                        <!-- Policy -->
+                        <rect x="0" y="0" width="120" height="50" fill="#4CAF50" opacity="0.8" rx="5"/>
+                        <text x="60" y="30" text-anchor="middle" fill="white" font-size="14">Policy π</text>
+            
+                        <!-- Dynamics Model -->
+                        <rect x="160" y="0" width="120" height="50" fill="#FF9800" opacity="0.8" rx="5"/>
+                        <text x="220" y="30" text-anchor="middle" fill="white" font-size="14">Model P</text>
+            
+                        <!-- Meta-Loss -->
+                        <rect x="320" y="0" width="120" height="50" fill="#2196F3" opacity="0.8" rx="5"/>
+                        <text x="380" y="30" text-anchor="middle" fill="white" font-size="14">Meta-Loss</text>
+            
+                        <!-- Arrows -->
+                        <path d="M120,25 L160,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <path d="M280,25 L320,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+            
+                        <!-- Example -->
+                        <text x="20" y="80" font-size="12">• Learn dynamics model from real system data</text>
+                        <text x="20" y="100" font-size="12">• Use model to train policy with meta-loss</text>
+                        <text x="20" y="120" font-size="12">• Meta-loss captures optimal policy update strategy</text>
+                    </g>
+                </g>
+            
+                <!-- Model-free RL -->
+                <g transform="translate(50, 460)">
+                    <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="5"/>
+                    <text x="20" y="30" font-size="16" font-weight="bold">3. Model-free Reinforcement Learning</text>
+            
+                    <g transform="translate(20, 45)">
+                        <!-- Policy -->
+                        <rect x="0" y="0" width="160" height="50" fill="#4CAF50" opacity="0.8" rx="5"/>
+                        <text x="80" y="30" text-anchor="middle" fill="white" font-size="14">Policy π</text>
+            
+                        <!-- Meta-Loss -->
+                        <rect x="240" y="0" width="160" height="50" fill="#2196F3" opacity="0.8" rx="5"/>
+                        <text x="320" y="20" text-anchor="middle" fill="white" font-size="14">Meta-Loss</text>
+                        <text x="320" y="40" text-anchor="middle" fill="white" font-size="12">Uses trajectory rewards</text>
+            
+                        <!-- Arrows -->
+                        <path d="M160,25 L240,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+            
+                        <!-- Example -->
+                        <text x="20" y="80" font-size="12">• Policy generates trajectories with rewards</text>
+                        <text x="20" y="100" font-size="12">• Meta-loss learns from trajectory rewards</text>
+                        <text x="20" y="120" font-size="12">• No dynamics model needed</text>
+                    </g>
+                </g>
+            
+                <!-- Arrow marker definition -->
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+                    </marker>
+                </defs>
+            </svg>
+            <!-- Position the first details element over the SVG -->
+            <div class="details-overlay" style="top: 215px; left: 470px;">
+                <details class="image-dropdown">
+                    <summary>View Algorithm →</summary>
+                    <img src="supervised-algorithm.png" alt="Supervised Learning Algorithm" class="algorithm-image">
+                </details>
+            </div>
+            <!-- Position the second details element over the SVG -->
+            <div class="details-overlay" style="top: 415px; left: 470px;">
+                <details class="image-dropdown">
+                    <summary>View Algorithm →</summary>
+                    <img src="reinforcement-algorithm.png" alt="Reinforcement Learning Algorithm" class="algorithm-image">
+                </details>
+            </div>
         </div>
     </div>
-
     
     <div class="slide" id="slide5">
-        <svg viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
-            <!-- Title -->
-            <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">Meta-Learning Approaches</text>
-        
-            <!-- Supervised Learning -->
-            <g transform="translate(50, 60)">
-                <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="5"/>
-                <text x="20" y="30" font-size="16" font-weight="bold">1. Supervised Learning</text>
-        
-                <g transform="translate(20, 45)">
-                    <!-- Model -->
-                    <rect x="0" y="0" width="160" height="50" fill="#4CAF50" opacity="0.8" rx="5"/>
-                    <text x="80" y="30" text-anchor="middle" fill="white" font-size="14">Model: f(x)</text>
-        
-                    <!-- Meta-Loss -->
-                    <rect x="240" y="0" width="160" height="50" fill="#2196F3" opacity="0.8" rx="5"/>
-                    <text x="320" y="30" text-anchor="middle" fill="white" font-size="14">Meta-Loss: M(f(x), y)</text>
-        
-                    <!-- Arrows -->
-                    <path d="M160,25 L240,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
-                    
-                    <!-- Example -->
-                    <text x="20" y="80" font-size="12">• For classification: Compare predicted vs true labels</text>
-                    <text x="20" y="100" font-size="12">• For regression: Compare predicted vs target values</text>
-                    <text x="20" y="120" font-size="12">• Meta-loss learns optimal comparison metric</text>
-    
-                    <!-- Algorithm Dropdown using foreignObject -->
-                    <foreignObject x="450" y="70" width="200" height="100">
-                        <details xmlns="http://www.w3.org/1999/xhtml" class="image-dropdown">
-                            <summary>View Algorithm →</summary>
-                            <img src="supervised-algorithm.png" alt="Supervised Learning Algorithm" class="algorithm-image">
-                        </details>
-                    </foreignObject>
-                </g>
-            </g>
-        
-            <!-- Model-based RL -->
-            <g transform="translate(50, 260)">
-                <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="5"/>
-                <text x="20" y="30" font-size="16" font-weight="bold">2. Model-based Reinforcement Learning</text>
-        
-                <g transform="translate(20, 45)">
-                    <!-- Policy -->
-                    <rect x="0" y="0" width="120" height="50" fill="#4CAF50" opacity="0.8" rx="5"/>
-                    <text x="60" y="30" text-anchor="middle" fill="white" font-size="14">Policy π</text>
-        
-                    <!-- Dynamics Model -->
-                    <rect x="160" y="0" width="120" height="50" fill="#FF9800" opacity="0.8" rx="5"/>
-                    <text x="220" y="30" text-anchor="middle" fill="white" font-size="14">Model P</text>
-        
-                    <!-- Meta-Loss -->
-                    <rect x="320" y="0" width="120" height="50" fill="#2196F3" opacity="0.8" rx="5"/>
-                    <text x="380" y="30" text-anchor="middle" fill="white" font-size="14">Meta-Loss</text>
-        
-                    <!-- Arrows -->
-                    <path d="M120,25 L160,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
-                    <path d="M280,25 L320,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
-        
-                    <!-- Example -->
-                    <text x="20" y="80" font-size="12">• Learn dynamics model from real system data</text>
-                    <text x="20" y="100" font-size="12">• Use model to train policy with meta-loss</text>
-                    <text x="20" y="120" font-size="12">• Meta-loss captures optimal policy update strategy</text>
-    
-                    <!-- Algorithm Dropdown using foreignObject -->
-                    <foreignObject x="450" y="70" width="200" height="100">
-                        <details xmlns="http://www.w3.org/1999/xhtml" class="image-dropdown">
-                            <summary>View Algorithm →</summary>
-                            <img src="reinforcement-algorithm.png" alt="Reinforcement Learning Algorithm" class="algorithm-image">
-                        </details>
-                    </foreignObject>
-                </g>
-            </g>
-        
-            <!-- Model-free RL -->
-            <g transform="translate(50, 460)">
-                <rect x="0" y="0" width="700" height="180" fill="#f8f9fa" rx="5"/>
-                <text x="20" y="30" font-size="16" font-weight="bold">3. Model-free Reinforcement Learning</text>
-        
-                <g transform="translate(20, 45)">
-                    <!-- Policy -->
-                    <rect x="0" y="0" width="160" height="50" fill="#4CAF50" opacity="0.8" rx="5"/>
-                    <text x="80" y="30" text-anchor="middle" fill="white" font-size="14">Policy π</text>
-        
-                    <!-- Meta-Loss -->
-                    <rect x="240" y="0" width="160" height="50" fill="#2196F3" opacity="0.8" rx="5"/>
-                    <text x="320" y="20" text-anchor="middle" fill="white" font-size="14">Meta-Loss</text>
-                    <text x="320" y="40" text-anchor="middle" fill="white" font-size="12">Uses trajectory rewards</text>
-        
-                    <!-- Arrows -->
-                    <path d="M160,25 L240,25" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
-        
-                    <!-- Example -->
-                    <text x="20" y="80" font-size="12">• Policy generates trajectories with rewards</text>
-                    <text x="20" y="100" font-size="12">• Meta-loss learns from trajectory rewards</text>
-                    <text x="20" y="120" font-size="12">• No dynamics model needed</text>
-                </g>
-            </g>
-        
-            <!-- Arrow marker definition -->
-            <defs>
-                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                    <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
-                </marker>
-            </defs>
-        </svg>
-    </div>
-
-    <div class="slide" id="slide6">
         <h2>Loss Shaping</h2>
     
         <div class="process-container">
@@ -925,7 +900,7 @@
         </div>
     </div>
     
-    <div class="slide" id="slide7">
+    <div class="slide" id="slide6">
         <h2>Experiments</h2>
     
         <div class="experiments-grid">
@@ -946,7 +921,6 @@
                 <div class="experiment-cell">
                     <p class="experiment-label">Sine Curve Fitting</p>
                     <div class="sine-container">
-                        <img src="sine-fitting.png" alt="Sine Fitting" class="experiment-image">
                         <img src="sine-for-experiments.png" alt="Sine Experiments" class="experiment-image">
                     </div>
                 </div>
@@ -968,7 +942,7 @@
 
 
 
-    <div class="slide" id="slide8">
+    <div class="slide" id="slide7">
         <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
             <!-- Title -->
             <text x="400" y="40" text-anchor="middle" font-size="24" font-weight="bold">Future Directions</text>
@@ -1012,6 +986,16 @@
                 <text x="20" y="35" font-size="14">Code available at: sites.google.com/view/mlthree</text>
             </g>
         </svg>
+    </div>
+    
+    <div class="slide" id="slide8">
+        <h2>Core Concept</h2>
+        <div class="explanation-text">
+            The core concept of this research involves using a meta-loss network to learn adaptable loss functions across tasks and architectures.
+        </div>
+        <div class="video-container">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/QmePrknJh1g" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
     </div>
 
     <script>
